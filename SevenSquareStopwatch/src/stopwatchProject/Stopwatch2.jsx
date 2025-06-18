@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 
 const StopWatch2 = () => {
   const [time, setTime] = useState({ hr: 0, min: 0, sec: 0, ms: 0 });
