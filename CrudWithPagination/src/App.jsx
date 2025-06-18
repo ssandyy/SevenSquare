@@ -1,11 +1,11 @@
 import './App.css'
-import Datatable from "./Datatable"
+import Datatable from "./components/Datatable"
 
 function App() {
 
   return (
-    <div>
-      <Datatable />
+    <div className="App">
+     <Datatable />
     </div>
   )
 }
