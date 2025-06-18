@@ -125,3 +125,11 @@ table tr:hover {
     margin: 3px 0;
   }
 }
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}

@@ -1,9 +1,32 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react';
 
 const Datatable = () => {
 
     const  [formData, setFormData] = useState({fname:"", lname:"", email:"", phone:"", resume_url:"", source:""})
     const [data, setData] = useState([])
+   
+    // Pagination
+    const [currentPage, setCurrentpage] = useState(1);
+    const itemsPerPage = 5; 
+    const [searchTerm, setSearchTerm] = useState("");
+    const LastItem = currentPage * itemsPerPage; 
+    const FirstItem = LastItem - itemsPerPage;
+   
+    const filteredElement = data.filter(item => 
+        item.fname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.lname.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    const filteredData = filteredElement.slice(FirstItem, LastItem);
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+    }
+
+    const paginate = (pageNumber) => {
+        setCurrentpage(pageNumber);
+        
+    }
+
 
     //edit functionality
     const [editId, SetEditId] = useState(false)
@@ -17,8 +40,13 @@ const Datatable = () => {
         selectedItem[1].focus(); // place where cursor should blink 
     }, [editId]);
 
-    //disable the edit function after clicking outside to prevent upnormal edit after saving it should only be activated on edit button click
 
+    useEffect(() => {
+        setCurrentpage(1); // Reset to first page when data changes
+    },[searchTerm]);
+
+    
+    //disable the edit function after clicking outside to prevent upnormal edit after saving it should only be activated on edit button click
     useEffect(() => {
         const handleClickOutside = (eventz) => {
             if(outsideClick.current && !outsideClick.current.contains(eventz.target)){
@@ -42,11 +70,7 @@ const Datatable = () => {
             setData(updateList);
     }
     
-    
-    
-    
-    
-    console.log(data);
+    // console.log(data);
     
 
     const handleInputChange = (e) => {
@@ -73,11 +97,15 @@ const Datatable = () => {
     // console.log(data);
 
     const handleDeleteButton = (id) => {
+        if(filteredData.length === 1 && currentPage > 1){
+            setCurrentpage((prev) => prev -1);
+        }
         const updateList = data.filter((item)=> item.id !==id);
         setData(updateList)
     }
     
 
+    
   return (
     <>
         <div className="container">
@@ -91,9 +119,9 @@ const Datatable = () => {
                     <input type="text" name="resume_url"  placeholder="Profile Url" value={formData.resume_url} onChange={handleInputChange} />
                     <input type="text" name="source"  placeholder="Linkedin, Monster, CB, .." value={formData.source} onChange={handleInputChange} />
                 </div>
-                <button className="add" onClick={handleAddClick}>Add</button>
+                <button className="add" onClick={handleAddClick}>+Add New Data</button>
                 <div className="search-table-container">
-                    <input className="search-input" type="text" placeholder="Search By name" value={""} onChange={() => {}} />
+                    <input className="search-input" type="text" placeholder="Search By name" value={searchTerm} onChange={handleSearch} />
                 </div>
                 <table ref={outsideClick}>
                     <thead>
@@ -122,7 +150,7 @@ const Datatable = () => {
                             </td>
                         </tr> */}
 
-                        {data.map((item) => (
+                        {filteredData.map((item) => (
                             <tr key={item.id}>
                             <td id={item.id}>{item.id}</td>
                             <td id={item.id} contentEditable={editId === item.id} onBlur={(e) =>  handleEdit(item.id, {fname:e.target.innerHTML})}>{item.fname}</td>
@@ -139,7 +167,12 @@ const Datatable = () => {
                         ))}
                     </tbody>
                 </table>
-                <div className="pagination"></div>
+                <div className="pagination">
+                    {Array.from({length: Math.ceil(filteredElement.length / itemsPerPage)}, (_, index) => (
+        
+                        <button key={index+1} onClick={() => paginate(index+1)}style={{backgroundColor:currentPage === index+1 && "lightcoral" }}>{index+1}</button>
+                    ))}
+                </div>
             </div>
         </div>
     </>
