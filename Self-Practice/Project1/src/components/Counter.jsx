@@ -13,7 +13,9 @@ const Counter = () => {
 
     const SubValue = () => {
         if(count!=0){
-            setCount(() => count - 1)
+            setCount((count) => count - 1)
+            // or 
+            // setCount(count - 1)
         }else {
             alert("You value is 0 the minimum allowed..!")
         }
