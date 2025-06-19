@@ -4,11 +4,19 @@ const Counter = () => {
     const [count, setCount] = useState(0);
 
     const addValue = () => {
-        setCount((count) => count+1);
+        if(count !=20){
+            setCount((count) => count+1);
+        }else{
+            alert("you have reached the max addon value..!")
+        }
     }
 
     const SubValue = () => {
-        setCount(() => count - 1)
+        if(count!=0){
+            setCount(() => count - 1)
+        }else {
+            alert("You value is 0 the minimum allowed..!")
+        }
     }
 
   return (
