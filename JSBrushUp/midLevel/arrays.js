@@ -48,7 +48,6 @@ const arraySlice = arry.slice(1,3);
 console.log(arraySlice);
 console.log(arry);
 
-
 //splice
 const arry2 = [1,2,3,4,5,6,7]
 const arry2Splice = arry2.splice(1,3);
