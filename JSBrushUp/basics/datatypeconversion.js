@@ -28,8 +28,4 @@ console.log(NameInNumber);  //NAN
 
 console.log("==================================");
 
-
-
-
-
-
+// using 'toString()'
