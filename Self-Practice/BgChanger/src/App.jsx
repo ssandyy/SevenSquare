@@ -4,7 +4,6 @@ import Button from './components/Button'
 
 function App() {
 const [bgColor, setColorBg] = useState("olive")
- 
   return (
       <div className='w-full h-screen duration-200' style={{backgroundColor: bgColor}}>
               <h1 className='font-extrabold text-3xl'>Hello Coder ..!</h1>
@@ -22,5 +21,4 @@ const [bgColor, setColorBg] = useState("olive")
       </div>
   )
 }
-
 export default App
