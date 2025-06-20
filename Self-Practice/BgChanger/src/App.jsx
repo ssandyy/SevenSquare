@@ -10,7 +10,7 @@ const [bgColor, setColorBg] = useState("olive")
               <h1 className='font-extrabold text-3xl'>Hello Coder ..!</h1>
               <h3>Click Below buttons to change Background Color </h3>
               <div className='fixed flex flex-wrap justify-center bottom-12 px-2 inset-x-0 '>
-                <div className='flex flex-wrap justify-center bg-white gap-3 px-4'>
+                <div className='flex flex-wrap justify-center bg-white gap-3 px-4 rounded-2xl'>
                   <Button color= "olive" btnName="Olive" setColor={setColorBg}/>
                   <Button color= "red" btnName="Red" setColor={setColorBg}/>
                   <Button color="purple" btnName="Purple" setColor={setColorBg}/>
