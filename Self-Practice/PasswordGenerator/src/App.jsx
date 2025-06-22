@@ -26,11 +26,14 @@ function App() {
 
   }, [length, specialCharCheck, numCheck, setPassword]) 
 
+
   const copyClipBoard = useCallback(() => {
       passwordRef.current?.select() // this will give effect of selected value.. !
       window.navigator.clipboard.writeText(password)
   }, [password])
 
+
+  
   useEffect(() => {
     passwordGenerator()
   }, [length, numCheck, specialCharCheck, passwordGenerator])
