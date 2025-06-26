@@ -22,3 +22,18 @@ VITE_APPWRITE_BUCKET_ID="6734794f002ae8d96053"
 
 3:
 create conf->config.js
+
+
+
+
+
+
+
+4: app.jsx
+    i> check user is logged in or not 
+    ii> if loggedin show posts else login request message or anything..
+    iii>  create loading to handle wait
+    iv> now need dispatch, as to bring current user 
+    v> now we need auth service (ServiceAuth.js)
+    vi> at app loading we should call useEffect to check user is logged in or not along with conditional rendering..
+

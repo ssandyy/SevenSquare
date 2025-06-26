@@ -1,31 +1,24 @@
-import { createSlice } from 'react-redux';
+import { createSlice } from "@reduxjs/toolkit";
 
-// const initialState = {
-//         status: false,
-//         userData: null
-//     }
+const initialState = {
+  status: false,
+  userData: null
+}
 
-const authSlice = createSlice({
-    name: "auth",
-    initialState : {
-        status: false,
-        userData: null
+export const authSlice = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    login: (state, action) => {
+      state.status = true;
+      state.userData = action.payload; // Direct payload assignment
     },
-    reducers: {
-        login: (state, action) => {
-            state.status = true;
-            state.userData = action.payload  // name is same userData == userData
-            // or
-            // state.userData = action.payload.userData
-        },
-        // we dont have to pass anything so no need of action 
-        logout: (state) => {
-            state.status = false,
-            state.userData = null;
-        }
+    logout: (state) => {
+      state.status = false;
+      state.userData = null;
     }
+  }
 })
 
 export const { login, logout } = authSlice.actions;
-
-export default authSlice.reducers;
+export default authSlice.reducer;

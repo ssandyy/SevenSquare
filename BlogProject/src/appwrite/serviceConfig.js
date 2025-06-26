@@ -1,139 +1,137 @@
-import { Client, Databases, ID, Query, Storage } from 'appwrite';
-import config from '../conf/config';
+import { Client, Databases, ID, Query, Storage } from "appwrite";
+import conf from '../conf/config.js';
 
-
-export class ServiceConfig {
+export class Service{
     client = new Client();
     databases;
-    buckets;
-
+    bucket;
+    
     constructor(){
         this.client
-            .setEndpoint(config.appwriteEndpoint)
-            .setProject(config.appwriteProjectId);
-        
-        // this.databases = this.client.database;
-        // this.buckets = this.client.storage;
-        this.databases = new Databases(this.client)
-        this.buckets = new Storage(this.client);
-        
+        .setEndpoint(conf.appwriteUrl)
+        .setProject(conf.appwriteProjectId);
+        this.databases = new Databases(this.client);
+        this.bucket = new Storage(this.client);
     }
 
-    //create post/service
-    async createBlog({userId, title, contents, status, featuredImage, slug}){
+    async createPost({title, slug, content, featuredImage, status, userId}){
         try {
             return await this.databases.createDocument(
-                config.appwriteDatabaseId,
-                config.appwriteCollectionId,
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
                 slug,
                 {
-                    userId,
                     title,
-                    contents,
+                    content,
                     featuredImage,
-                    status
+                    status,
+                    userId,
                 }
             )
         } catch (error) {
-            throw new Error("Something went wrong while creating the blog post..!"+ error);
+            console.log("Appwrite serive :: createPost :: error", error);
         }
     }
 
-    //update post/service
-    // await databases.updateDocument('<DATABASE_ID>', <COLLECTION_ID>', <DOCUMENT_ID>')
- 
-    async updateBlog(slug, {title, contents, status, featuredImage}) { // here we have taken slug seperatly to extract document-id
+    async updatePost(slug, {title, content, featuredImage, status}){
         try {
             return await this.databases.updateDocument(
-                config.appwriteDatabaseId,
-                config.appwriteCollectionId,
-                slug, // document id
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                slug,
                 {
                     title,
-                    contents,
+                    content,
                     featuredImage,
-                    status
+                    status,
+
                 }
             )
         } catch (error) {
-            throw new Error("Something went wrong while updating the blog post..!"+ error);
-            
+            console.log("Appwrite serive :: updatePost :: error", error);
         }
     }
 
-
-    //to delete post
-    //appwite.deleteDocument('<DATABASE_ID>', <COLLECTION_ID>, <DOCUMENT_ID>)
-    async deleteBlog(slug){
+    async deletePost(slug){
         try {
             await this.databases.deleteDocument(
-                config.appwriteDatabaseId,
-                config.appwriteCollectionId,
-                slug // document id
-
-            )
-            return true;
-        } catch (error) {
-            throw new Error("Something went wrong while deleting the blog post..!"+ error);
-        }
-    }
-
-    async getBlog(slug){
-        try {
-            await this.databases.getDocument(
-                config.appwriteDatabaseId,
-                config.appwriteCollectionId,
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
                 slug
+            
             )
+            return true
         } catch (error) {
-            throw new Error("Something went wrong while fetching the blog post..!"+ error);
+            console.log("Appwrite serive :: deletePost :: error", error);
+            return false
         }
     }
-    
-    async getBlogList(condition = [Query.equal("status", "active")]){
+
+    async getPost(slug){
+        try {
+            return await this.databases.getDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                slug
+            
+            )
+        } catch (error) {
+            console.log("Appwrite serive :: getPost :: error", error);
+            return false
+        }
+    }
+
+    async getPosts(queries = [Query.equal("status", "active")]){
         try {
             return await this.databases.listDocuments(
-                config.appwriteDatabaseId,
-                config.appwriteCollectionId,
-                condition
-                // or
-                // [Query.equal("status", "active")]
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                queries,
+                
+
             )
         } catch (error) {
-            throw new Error("Something went wrong while fetching the blog post..!"+ error);
+            console.log("Appwrite serive :: getPosts :: error", error);
+            return false
         }
     }
 
-//------------------------------ File Services  ----------------------------------
-    // file/image upoad
-    async fileUpload(file){
+    // file upload service
+
+    async uploadFile(file){
         try {
-            return await this.buckets.createFile(
-                config.appwriteBucketId,
+            return await this.bucket.createFile(
+                conf.appwriteBucketId,
                 ID.unique(),
                 file
             )
         } catch (error) {
-            throw new Error("Something went wrong while uploading the file..!", error)
+            console.log("Appwrite serive :: uploadFile :: error", error);
+            return false
         }
     }
 
-    //delete file/image
-    async deleteuploadedFile(fileid){
+    async deleteFile(fileId){
         try {
-            return await this.buckets.deleteFile(
-                config.appwriteBucketId,
-                fileid
+            await this.bucket.deleteFile(
+                conf.appwriteBucketId,
+                fileId
             )
+            return true
         } catch (error) {
-            throw new Error("something went wron on file deleting..!", error);
-            
+            console.log("Appwrite serive :: deleteFile :: error", error);
+            return false
         }
     }
 
-
+    getFilePreview(fileId){
+        return this.bucket.getFilePreview(
+            conf.appwriteBucketId,
+            fileId
+        )
+    }
 }
 
-const serviceConfig = new ServiceConfig();
 
-export default serviceConfig;
+const service = new Service()
+export default service
