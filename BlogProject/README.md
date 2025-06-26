@@ -1,12 +1,24 @@
-# React + Vite
+Steps :
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+1:
+install dependencies and packages
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+2: create '.env' file in root directory to link backend service in variable :
+# if application created by create react app
+# REACT_APP_APPWRITE_URL = "test environment"
+# or 
+# REACT_APP_APPWRITE_URL = test-environment
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# we have created our application using vite so using VITE_  its compulsory ..!
+VITE_APPWRITE_ENDPOINT = "https://fra.cloud.appwrite.io/v1"
+VITE_APPWRITE_PROJECT_ID="673476b20022c85353e6"
+VITE_APPWRITE_DATABASE_ID="685bc9a90001ea7f50b6"
+VITE_APPWRITE_COLLECTION_ID="685bc9ea001db5f98c37"
+VITE_APPWRITE_BUCKET_ID="6734794f002ae8d96053"
+
+
+
+3:
+create conf->config.js
