@@ -3,51 +3,96 @@ import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Button, Input, RTE, Select } from "..";
-import appwriteService from "../../appwrite/config";
+import appwriteService from "../../appwrite/serviceConfig";
 
 export default function PostForm({ post }) {
+    // const rawUserData = useSelector((state) => state.auth.userData);
+    // const user = rawUserData?.userData; 
+
+    const user = useSelector((state) => state.auth.userData?.userData);
+
     const { register, handleSubmit, watch, setValue, control, getValues } = useForm({
         defaultValues: {
             title: post?.title || "",
             slug: post?.$id || "",
-            content: post?.content || "",
+            contents: post?.contents || "",
             status: post?.status || "active",
         },
     });
+    
+   
+       const navigate = useNavigate();
 
-    const navigate = useNavigate();
-    const userData = useSelector((state) => state.auth.userData);
 
-    const submit = async (data) => {
+
+    const submit = async (data) => {   
+    try {
         if (post) {
-            const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
-
-            if (file) {
-                appwriteService.deleteFile(post.featuredImage);
+            // Handle post update
+            let featuredImage = post.featuredImage;
+            
+            // Upload new image if provided
+            if (data.image[0]) {
+                const file = await appwriteService.uploadFile(data.image[0]);
+                if (file) {
+                    // Delete old image if it exists
+                    if (post.featuredImage) {
+                        await appwriteService.deleteFile(post.featuredImage);
+                    }
+                    featuredImage = file.$id;
+                }
             }
 
             const dbPost = await appwriteService.updatePost(post.$id, {
-                ...data,
-                featuredImage: file ? file.$id : undefined,
+                title: data.title,
+                slug: data.slug,
+                contents: data.contents,
+                featuredImage,
+                status: data.status
+                
+
             });
 
-            if (dbPost) {
-                navigate(`/post/${dbPost.$id}`);
+            if (!dbPost) {
+                throw new Error("Failed to update post");
             }
+
+            navigate(`/post/${dbPost.$id}`);
         } else {
-            const file = await appwriteService.uploadFile(data.image[0]);
-
-            if (file) {
-                const fileId = file.$id;
-                data.featuredImage = fileId;
-                const dbPost = await appwriteService.createPost({ ...data, userId: userData.$id });
-
-                if (dbPost) {
-                    navigate(`/post/${dbPost.$id}`);
-                }
+            // Handle new post creation
+            if (!data.image[0]) {
+                throw new Error("Featured image is required");
             }
+
+            const file = await appwriteService.uploadFile(data.image[0]);
+            if (!file) {
+                throw new Error("Failed to upload image");
+            }
+
+            const dbPost = await appwriteService.createPost({
+                title: data.title,
+                slug: data.slug,
+                contents: data.contents,
+                featuredImage: file.$id,
+                status: data.status,
+                userId: user.id  
+            });
+
+            if (!dbPost) {
+                // Clean up the uploaded image if post creation fails
+                await appwriteService.deleteFile(file.$id);
+                throw new Error("Failed to create post");
+            }
+
+            navigate(`/post/${dbPost.$id}`);
         }
-    };
+    } catch (error) {
+        console.error("Post submission error:", error);
+        // Add user-friendly error handling here (toast, alert, etc.)
+        alert(`Error: ${error.message}`);
+    }
+};
+
 
     const slugTransform = useCallback((value) => {
         if (value && typeof value === "string")
@@ -88,7 +133,7 @@ export default function PostForm({ post }) {
                         setValue("slug", slugTransform(e.currentTarget.value), { shouldValidate: true });
                     }}
                 />
-                <RTE label="Content :" name="content" control={control} defaultValue={getValues("content")} />
+                <RTE label="Contents :" name="contents" control={control} defaultValue={getValues("contents")} />
             </div>
             <div className="w-1/3 px-2">
                 <Input

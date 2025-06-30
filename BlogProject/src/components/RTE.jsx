@@ -11,10 +11,11 @@ export default function RTE({name, control, label, defaultValue =""}) {
     {label && <label className='inline-block mb-1 pl-1'>{label}</label>}
 
     <Controller
-    name={name || "content"}
+    name={name || "contents"}
     control={control}
     render={({field: {onChange}}) => (
         <Editor
+        apiKey="9ya8ovnyjlp3ct641lfzvg3lnpezmrziuqemxndxz0ip18ej"
         initialValue={defaultValue}
         init={{
             initialValue: defaultValue,

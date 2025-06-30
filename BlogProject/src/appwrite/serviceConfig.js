@@ -1,4 +1,4 @@
-import { Client, Databases, ID, Query, Storage } from "appwrite";
+import { Client, Databases, ID, Permission, Query, Role, Storage } from "appwrite";
 import conf from '../conf/config.js';
 
 export class Service{
@@ -8,13 +8,13 @@ export class Service{
     
     constructor(){
         this.client
-        .setEndpoint(conf.appwriteUrl)
+        .setEndpoint(conf.appwriteEndpoint)
         .setProject(conf.appwriteProjectId);
         this.databases = new Databases(this.client);
         this.bucket = new Storage(this.client);
     }
 
-    async createPost({title, slug, content, featuredImage, status, userId}){
+    async createPost({title, slug, contents, featuredImage, status, userId}){
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
@@ -22,10 +22,11 @@ export class Service{
                 slug,
                 {
                     title,
-                    content,
+                    contents,
                     featuredImage,
                     status,
                     userId,
+                    documentId: slug,
                 }
             )
         } catch (error) {
@@ -33,7 +34,7 @@ export class Service{
         }
     }
 
-    async updatePost(slug, {title, content, featuredImage, status}){
+    async updatePost(slug, {title, contents, featuredImage, status}){
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
@@ -41,7 +42,7 @@ export class Service{
                 slug,
                 {
                     title,
-                    content,
+                    contents,
                     featuredImage,
                     status,
 
@@ -98,16 +99,19 @@ export class Service{
 
     // file upload service
 
-    async uploadFile(file){
+    async uploadFile(file) {
         try {
             return await this.bucket.createFile(
                 conf.appwriteBucketId,
                 ID.unique(),
-                file
-            )
+                file,
+                [
+                    Permission.read(Role.any())  // 👈 This line makes the file publicly accessible
+                ]
+            );
         } catch (error) {
-            console.log("Appwrite serive :: uploadFile :: error", error);
-            return false
+            console.log("Appwrite service :: uploadFile :: error", error);
+            return false;
         }
     }
 
@@ -124,11 +128,9 @@ export class Service{
         }
     }
 
-    getFilePreview(fileId){
-        return this.bucket.getFilePreview(
-            conf.appwriteBucketId,
-            fileId
-        )
+    getFilePreview(fileId) {
+        if (!fileId) return null;
+        return this.bucket.getFileView(conf.appwriteBucketId, fileId).toString();
     }
 }
 

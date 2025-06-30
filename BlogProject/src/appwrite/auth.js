@@ -7,12 +7,12 @@ export class AuthService {
     account;
 
     constructor() {
-        this.client
-            .setEndpoint(conf.appwriteEndpoint)
-            .setProject(conf.appwriteProjectId);
-        this.account = new Account(this.client);
-            
-    }
+    this.client
+        .setEndpoint(conf.appwriteEndpoint)
+        .setProject(conf.appwriteProjectId);
+    this.account = new Account(this.client);
+}
+
 
     async createAccount({email, password, name}) {
         try {
@@ -24,27 +24,48 @@ export class AuthService {
                return  userAccount;
             }
         } catch (error) {
-            console.log("Appwrite serive :: getCurrentUser :: error",error);
+           console.log("Appwrite service:: logout :: error", error);
         }
     }
 
-    async login({email, password}) {
-        try {
-            return await this.account.createEmailSession(email, password);
-        } catch (error) {
-           console.log("Appwrite serive :: getCurrentUser :: error", error);
-        }
+    async login({ email, password }) {
+    try {
+        console.log("Login data:", email, password);  // Add this for debugging
+        if (!this.account) this.account = new Account(this.client);
+        return await this.account.createEmailPasswordSession(email, password); // <-- FIXED
+    } catch (error) {
+        console.log("Appwrite service :: login :: error", error);
+        throw error;
     }
+}
 
     async getCurrentUser() {
-        try {
-            return await this.account.get();
-        } catch (error) {
-            if (error.code === 401) return null; // User is not logged in
-            throw new Error("Something went wrong while fetching account details.");
+    try {
+        const user = await this.account.get();
+        return {
+            id: user.$id,
+            name: user.name,
+            email: user.email
+        };
+    } catch (error) {
+        if (error.code === 401 || error.message.includes("missing scope")) {
+            console.warn("User is not logged in.");
+            return null;
         }
+        console.error("AppwriteService :: getCurrentUser :: error:", error);
+        return null;
     }
-
+}
+async verifySession() {
+    try {
+        // List sessions to check if any exists
+        const sessions = await this.account.listSessions();
+        return sessions.total > 0;
+    } catch (error) {
+        console.error("AppwriteService :: getCurrentUser :: error:", error);
+        return false;
+    }
+}
     async logout() {
         try {
             await this.account.deleteSessions();
