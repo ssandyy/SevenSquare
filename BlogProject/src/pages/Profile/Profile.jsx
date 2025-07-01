@@ -32,11 +32,17 @@ const Profile = () => {
     <>
     <div className="py-8">
         <Container>
-            <div className="w-full flex justify-center mb-4 relative border rounded-xl p-2">
+            <div className="w-full flex justify-center  relative border rounded-xl p-2">
             <img
-                src={service.getFilePreview(userData?.profileImage)}
+                src={
+                    userData?.profileImage ? service.getFilePreview(userData.profileImage)
+                     : `https://ui-avatars.com/api/?name=${userData?.name || 'User'}&background=random`   // : "/images/avatar.png" // or use a URL like 
+                    }
+                    onError={(e) => {
+                    e.target.src = "https://www.flaticon.com/free-icons/astronaut"; // fallback on error
+                }}
                 
-                alt="Profile"
+                alt="https://www.flaticon.com/free-icons/astronaut"
                 className="w-32 h-32 rounded-full object-cover"
             />
             </div>

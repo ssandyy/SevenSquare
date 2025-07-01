@@ -89,12 +89,24 @@ export class Service{
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 queries,
-                
-
             )
         } catch (error) {
             console.log("Appwrite serive :: getPosts :: error", error);
             return false
+        }
+    }
+
+    //Test Areana
+    async  getAllUsers(queries = [Query.equal("status", "verified")]){
+        try {
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                queries,
+            )
+        } catch (error) {
+            console.log("Appwrite serive :: getAllUsers :: error", error);
+            return false;
         }
     }
 
