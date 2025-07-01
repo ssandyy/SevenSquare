@@ -70,7 +70,7 @@ export default function Post() {
                         
                         <div className="absolute right-6 top-6">
                             <Link to={`/edit-post/${post.$id}`}>
-                            {console.log("👤 isAuthor:", isAuthor)}
+                            {/* {console.log("👤 isAuthor:", isAuthor)} */}
 
                                 <Button bgColor="bg-green-500" className="mr-3">
                                     Edit

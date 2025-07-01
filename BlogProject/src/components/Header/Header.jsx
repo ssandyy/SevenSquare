@@ -1,10 +1,13 @@
-import { useSelector } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
-import { Container, Logo, LogoutBtn } from '../index'
+import { useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { Container, Logo, LogoutBtn } from '../index';
 
 function Header() {
-  const authStatus = useSelector((state) => state.auth.status)
-  const navigate = useNavigate()
+  const authStatus = useSelector((state) => state.auth.status);
+  const userData = useSelector((state) => state.auth.userData?.userData.name);
+
+ 
+  const navigate = useNavigate();
 
   const navItems = [
     {
@@ -32,6 +35,7 @@ function Header() {
       slug: "/add-post",
       active: authStatus,
   },
+  
   ]
 
   return (
@@ -56,10 +60,20 @@ function Header() {
               </li>
             ) : null
             )}
+              
             {authStatus && (
+              <>
+              <li className='ml-4'>
+                <Link to='/profile'>
+                  <button className='inline-block px-6 py-2 duration-200 hover:bg-blue-100 rounded-full'>
+                    {userData || "Profile"}
+                  </button>
+                </Link>
+                </li>
               <li>
                 <LogoutBtn />
               </li>
+              </>
             )}
           </ul>
         </nav>

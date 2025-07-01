@@ -1,5 +1,5 @@
-import { Account, Client, ID } from "appwrite";
-import conf from '../conf/config.js';
+import { Account, Client, Databases, ID, Query } from "appwrite";
+import config, { default as conf } from '../conf/config.js';
 
 
 export class AuthService {
@@ -11,6 +11,7 @@ export class AuthService {
         .setEndpoint(conf.appwriteEndpoint)
         .setProject(conf.appwriteProjectId);
     this.account = new Account(this.client);
+    this.databases = new Databases(this.client);
 }
 
 
@@ -27,6 +28,41 @@ export class AuthService {
            console.log("Appwrite service:: logout :: error", error);
         }
     }
+
+    async deactivateUser(authUserId) {
+    try {
+
+        const res = await this.databases.listDocuments(
+            conf.appwriteDatabaseId,
+            conf.appwriteCollectionId,
+            [Query.equal("userId", authUserId)]
+            );
+
+            if (!res.documents.length) {
+            throw new Error("User document not found");
+            }
+
+            const documentId = res.documents[0].$id;
+
+        // 1. Mark user as inactive in database
+         await this.databases.updateDocument(
+            config.appwriteDatabaseId,
+            config.appwriteCollectionId,
+            documentId,
+            { status: `{"inactive" || "deleted" || "unverified"}` }
+            );
+
+        // 2. Logout the user
+        await this.logout();
+
+        // 3. Optionally redirect
+        window.location.href = '/';
+        return true;
+    } catch (error) {
+        console.error('Failed to deactivate user:', error);
+        return false;
+    }
+}
 
     async login({ email, password }) {
     try {
@@ -56,6 +92,24 @@ export class AuthService {
         return null;
     }
 }
+
+//------ User Account ----
+updateName(name) {
+    return this.account.updateName(name);
+}
+
+// Update email (requires current password for confirmation)
+updateEmail(email, password) {
+    return this.account.updateEmail(email, password);
+}
+
+// Update password (requires old password)
+updatePassword(newPassword, oldPassword) {
+    return this.account.updatePassword(newPassword, oldPassword);
+}
+
+
+
 async verifySession() {
     try {
         // List sessions to check if any exists

@@ -11,11 +11,14 @@ import store from './store/store.js'
 
 import AddPost from "./pages/AddPost.jsx"
 import EditPost from "./pages/EditPost.jsx"
-import Signup from './pages/Signup.jsx'
+import Signup from './pages/Profile/Signup.jsx'
 
 import Post from "./pages/Post.jsx"
 
 import AllPosts from "./pages/AllPost.jsx"
+import EditProfile from './pages/Profile/EditProfile.jsx'
+import Profile from './pages/Profile/Profile.jsx'
+import UpdatePassword from './pages/Profile/UpdatePassword.jsx'
 
 const router = createBrowserRouter([
   {
@@ -68,6 +71,34 @@ const router = createBrowserRouter([
                     <EditPost />
                 </AuthLayout>
             ),
+        },
+        {
+            path: "/profile",
+            element: (
+                <AuthLayout authentication>
+                    {" "}
+                    <h1 className="text-2xl text-center">My Profile</h1>
+                    <Profile />
+                </AuthLayout>
+            ),
+        },
+        {
+            path: "/edit-profile",
+            element: (
+                <AuthLayout authentication>
+                    {" "}
+                    <EditProfile />
+                </AuthLayout>
+            )
+        },
+        {
+            path: "/change-password",
+            element: (
+                <AuthLayout authentication>
+                    {" "}
+                    <UpdatePassword />
+                </AuthLayout>
+            )
         },
         {
             path: "/post/:slug",

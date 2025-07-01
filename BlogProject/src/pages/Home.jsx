@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import appwriteService from "../appwrite/serviceConfig";
-import { Container, PostCard } from '../components';
+import { Container } from '../components';
+import AllPosts from './AllPost';
 
 function Home() {
     const [posts, setPosts] = useState([])
@@ -32,13 +33,15 @@ function Home() {
     return (
         <div className='w-full py-8'>
             <Container>
-                <div className='flex flex-wrap'>
+                {/* <div className='flex flex-wrap'>
                     {posts.map((post) => (
                         <div key={post.$id} className='p-2 w-1/4'>
                             <PostCard {...post} />
                         </div>
                     ))}
-                </div>
+                </div> */}
+                <AllPosts postPerPage={4} pagination={true} title="Latest Articles" />
+
             </Container>
         </div>
     )
