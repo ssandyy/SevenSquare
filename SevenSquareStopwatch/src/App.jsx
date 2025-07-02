@@ -1,8 +1,7 @@
 import "./App.css";
-import { LoginForm } from "./login/loginForm";
-import { Register } from "./signup/register";
 import { StopWatch } from "./stopwatchProject/stopwatch";
 import StopWatch2 from "./stopwatchProject/Stopwatch2";
+import Stopwatch3 from "./stopwatchProject/Stopwatch3";
 
 export default function App() {
   return (
@@ -14,6 +13,8 @@ export default function App() {
       {/* <Register /> */}
       <br />
       <StopWatch2 />
+      <br />
+      <Stopwatch3 />
     </>
   );
 }

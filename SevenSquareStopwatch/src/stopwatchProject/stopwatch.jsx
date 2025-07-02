@@ -20,6 +20,7 @@ export const StopWatch = () => {
     clearInterval(file);
     file = null;
   };
+  
   const resetStopwatch = () => {
     clearInterval(file);
     setMilliSecTime(0);

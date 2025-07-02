@@ -28,7 +28,7 @@ export class Service{
                     userId,
                     documentId: slug,
                 },
-                // 👇 Allow the post creator to read and write
+                
                 Permission.read(Role.user(userId)),
                 Permission.update(Role.user(userId)),
                 Permission.delete(Role.user(userId)),

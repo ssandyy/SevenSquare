@@ -78,39 +78,6 @@ export class AuthService {
         }
     }
 
-    // login-signup with Magic Link from appwrite
-    async sendMagicURL(email, redirectUrl) {
-        try {
-            const token = await this.account.createMagicURLToken(
-                ID.unique(),
-                email,
-                redirectUrl,
-            );
-            console.log("Magic URL session initiated:",token);
-            return token;
-        } catch (error) {
-            console.error("AuthService :: sendMagicURL :: error", error);
-            throw error;
-        }
-        }
-
-        async verifyMagicURLSession(userId, secret) {
-            try {
-            // 1. Create the session (THIS IS CRITICAL)
-            const session = await this.account.updateMagicURLSession(userId, secret);
-                console.log('Session created:', session.$id); 
-            
-            // 2. Immediately fetch current session to force cookie setting
-                await this.account.getSession('current');
-            
-            // 3. Return the user data
-            return await this.account.get();
-            } catch (error) {
-            console.error('Magic URL verification failed:', error);
-            throw error;
-            }
-        }
-
   async sendOTP(email) {
     try {
         const response = await this.account.createEmailToken(
@@ -171,6 +138,7 @@ async hasPassword() {
         if (newPassword !== confirmPassword) {
           throw new Error("Passwords don't match");
         }
+        
 
         if (await this.hasPassword() && !currentPassword) {
           throw new Error("Current password is required");
