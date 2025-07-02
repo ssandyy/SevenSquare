@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import authService from "../../appwrite/auth";
+import { Button } from "../../components";
 
 const EditProfile = () => {
   const userData = useSelector((state) => state.auth.userData?.userData);
@@ -11,47 +12,48 @@ const EditProfile = () => {
   const [email, setEmail] = useState(userData?.email || "");
   const [currentPassword, setCurrentPassword] = useState("");
 
-   const handleUpdate = async (e) => {
+  //currentpassword button visible only when email is changed
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+
+
+  const handleUpdate = async (e) => {
     e.preventDefault();
 
-      try {
-        let updated = false;
+    try {
+      let updated = false;
 
-        // ✅ 1. Re-authenticate the user first with correct password
-        const loginSession = await authService.login({
-          email: userData.email,
-          password: currentPassword
-        });
+      // Update name (does not require password)
+      if (name !== userData.name) {
+        await authService.updateName(name);
+        updated = true;
+      }
 
-        if (!loginSession) {
-          alert("Reauthentication failed. Incorrect current password.");
+      // Update email (requires current password)
+      if (email !== userData.email) {
+        if (!currentPassword) {
+          alert("Current password is required to update email.");
           return;
         }
 
-        // ✅ 2. Update name (no password needed)
-        if (name !== userData.name) {
-          await authService.updateName(name);
-          updated = true;
-        }
-
-        // ✅ 3. Update email (requires password)
-        if (email !== userData.email) {
-          await authService.updateEmail(email, currentPassword);
-          updated = true;
-        }
-
-        if (updated) {
-          alert("Profile updated successfully!");
-          navigate("/profile");
-        } else {
-          alert("No changes detected.");
-        }
-
-      } catch (err) {
-        console.error("Profile update failed:", err);
-        alert("Update failed. Please check your credentials.");
+        await authService.updateEmail(email, currentPassword);
+        updated = true;
       }
-    };
+
+      if (updated) {
+        alert("Profile updated successfully!");
+        navigate("/profile");
+      } else {
+        alert("No changes made.");
+      }
+    } catch (err) {
+      console.error("Profile update failed:", err);
+      if (err?.message?.includes("Invalid credentials")) {
+        alert("Incorrect password. Please try again.");
+      } else {
+        alert("Update failed. Please try again.");
+      }
+    }
+  };
 
   return (
     <form onSubmit={handleUpdate} className="max-w-lg mx-auto space-y-4 p-4">
@@ -69,20 +71,29 @@ const EditProfile = () => {
         type="email"
         placeholder="New Email"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(e) => {
+            const newEmail = e.target.value;
+            setEmail(newEmail);
+            if(newEmail !== userData.email) {
+              // If email is changed, show current password field
+            setShowCurrentPassword(true)
+          }
+        }}
         className="w-full p-2 border rounded"
       />
-
-      <input
-        type="password"
-        placeholder="Current Password (required)"
-        value={currentPassword}
-        onChange={(e) => setCurrentPassword(e.target.value)}
-        className="w-full p-2 border rounded"
-        required
-      />
-
       
+      {showCurrentPassword && (
+        <input
+                type="password"
+                placeholder="Current Password (required)"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="w-full p-2 border rounded"
+                
+              />
+        )}
+            
+
       <Button
         type="submit"
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"

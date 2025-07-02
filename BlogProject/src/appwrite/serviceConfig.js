@@ -27,7 +27,14 @@ export class Service{
                     status,
                     userId,
                     documentId: slug,
-                }
+                },
+                // 👇 Allow the post creator to read and write
+                Permission.read(Role.user(userId)),
+                Permission.update(Role.user(userId)),
+                Permission.delete(Role.user(userId)),
+
+                // 👇 OR, if posts should be public
+                Permission.read(Role.any()) 
             )
         } catch (error) {
             console.log("Appwrite serive :: createPost :: error", error);
