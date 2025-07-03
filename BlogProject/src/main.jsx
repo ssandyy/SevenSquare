@@ -16,6 +16,7 @@ import Signup from './pages/Profile/Signup.jsx'
 import UpdatePassword from './pages/Profile/UpdatePassword.jsx'
 import store from './store/store.js'
 
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -44,7 +45,7 @@ const router = createBrowserRouter([
         {
             path: "/all-posts",
             element: (
-                <AuthLayout authentication>
+                <AuthLayout authentication={false}>
                     {" "}
                     <AllPosts />
                 </AuthLayout>

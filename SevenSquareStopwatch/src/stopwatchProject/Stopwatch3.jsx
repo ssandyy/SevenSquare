@@ -18,15 +18,17 @@ const Stopwatch3 = () => {
 
     const StartTimer = () => {
         setInterval(() => {
-              setSec(.(sec) => {
+              setSec((sec) => {
                   if(sec ===59){
                     setMin((min) => {
                         if(min === 59){
-                          setHr((hr) => hr + 1)
+                            setHr((hr) => hr + 1)
+                          return 0
                         }
-                    return min + 1
+                      return min + 1
                     }
                   )
+                  return 0
                 }
             return sec + 1})
           }, 10);

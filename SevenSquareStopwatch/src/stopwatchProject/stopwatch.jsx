@@ -27,7 +27,6 @@ export const StopWatch = () => {
     setSecTime(0);
     setMinTime(0);
     setHourTime(0);
-    
     file = null;
   };
 
