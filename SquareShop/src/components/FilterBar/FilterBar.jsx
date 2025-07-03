@@ -5,7 +5,7 @@ const FilterBar = () => {
 
     const [filters, setFilters] = useState({
         price: 2365,
-        ratings: 3,
+        ratings: 4,
         fastDelivery: false,
         includeOutOfStock: true,
         sortingType: false,
@@ -22,9 +22,7 @@ const FilterBar = () => {
     };
 
     return (
-        <div className="w-full bg-gray-300 min-h-screen min-w-[15rem] border-r border-r-white/10 p-6 sticky top-[3.5rem]">
-
-
+        <div className="min-w-[15rem] border-r border-r-white/10 p-6 sticky top-[5rem]">
             {/* radio ascending and descending */}
             <div>
                 <div className="form-control">

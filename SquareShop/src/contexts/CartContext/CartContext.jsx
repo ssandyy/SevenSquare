@@ -7,10 +7,10 @@ import { cartReducer } from './cartReducer';
 const CartContext = createContext();
 
 const CartContextProvider = ({ children }) => {
-    // const [products, setProducts] = useState(['a']);
+  // const [products, setProducts] = useState(['a']);
 
-    const products = [...Array(15)].map(() => ({
-        id: faker.string.uuid(),
+  const products = [...Array(15)].map(() => ({
+    id: faker.string.uuid(),
     productName: faker.commerce.productName(),
     productDescription: faker.commerce.productDescription(),
     price: faker.number.int({ min: 0, max: 5000 }),
@@ -24,16 +24,16 @@ const CartContextProvider = ({ children }) => {
     ratings: faker.helpers.arrayElement([1, 2, 3, 4, 5]),
   }));
 
-    // const state = {
-    //     products,  // objects of values
-    // }
-    
-    //using reducer
-    const [state, dispatch] = useReducer(cartReducer, {
-        products,
-    })
+  // const state = {
+  //     products,  // objects of values
+  // }
 
-    return (<CartContext.Provider value={state}> {children}</CartContext.Provider>);
+  //using reducer
+  const [state, dispatch] = useReducer(cartReducer, {
+    products,
+  })
+
+  return (<CartContext.Provider value={state}> {children}</CartContext.Provider>);
 }
 
 const useCartContext = () => {
@@ -42,4 +42,4 @@ const useCartContext = () => {
 
 export { CartContextProvider, useCartContext };
 
-    
+
