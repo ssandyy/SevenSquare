@@ -7,6 +7,7 @@ const Header = () => {
       <div className="flex-1">
         <a className="btn btn-ghost text-xl">SquareShop</a>
       </div>
+      
 
       {/* ✅ Visible only on ≥870px */}
       <div className="hidden  min-[870px]:flex items-center gap-3">
