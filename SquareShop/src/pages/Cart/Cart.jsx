@@ -92,8 +92,8 @@ const Cart = () => {
 
       <div className="mt-6 text-right text-xl font-semibold">
         Subtotal: ₹{subTotal}
+      <button className="btn btn-primary mt-4 ml-5">Proceed to Checkout</button>
       </div>
-      <button className="btn btn-primary mt-4">Proceed to Checkout</button>
     </div>
   );
 };
