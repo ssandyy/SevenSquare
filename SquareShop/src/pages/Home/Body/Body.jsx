@@ -1,8 +1,10 @@
-import AllProducts from "../../../components/Products/AllProducts"
+import AllProducts from "../../../components/Products/AllProducts";
+// import { useCartContext } from "../../../contexts/CartContext/CartContext";
 
 const Body = () => {
   // const {products} = useCartContext()
-
+ 
+  
   return (
     <>
         {/* <div  className="grid grid-cols-3 gap-[1rem] max-md:grid-cols-1 max-lg:grid-cols-2 p-2"> */}
@@ -12,7 +14,7 @@ const Body = () => {
         {/* </div> */}
       
       
-    <div className="justify-center">
+    <div className="flex justify-around">
         <AllProducts itemsPerPage={8} />
     </div>
       

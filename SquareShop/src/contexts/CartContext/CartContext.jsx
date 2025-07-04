@@ -16,8 +16,9 @@ const CartContextProvider = ({ children }) => {
     price: faker.number.int({ min: 0, max: 5000 }),
     image: faker.image.urlPicsumPhotos({
       width: 300,
-      height: 300,
+      height: 300
     }),
+    quantity:1,
     inStock: faker.helpers.arrayElement([0, 5, 10, 15, 20]),
     fastDelivery: faker.datatype.boolean(),
     new: faker.datatype.boolean(),
@@ -31,9 +32,16 @@ const CartContextProvider = ({ children }) => {
   //using reducer
   const [state, dispatch] = useReducer(cartReducer, {
     products,
+    cart: [],
   })
 
-  return (<CartContext.Provider value={state}> {children}</CartContext.Provider>);
+  return (
+  <CartContext.Provider value={{
+          state,
+          dispatch,
+        }}> 
+        {children}
+  </CartContext.Provider>);
 }
 
 const useCartContext = () => {

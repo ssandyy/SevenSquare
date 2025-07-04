@@ -1,6 +1,24 @@
+import { useCartContext } from "../../contexts/CartContext/CartContext";
 import Ratings from "../Rating/Ratings";
 
 const ProductCard = ({ details }) => {
+
+    const {state: {cart}, dispatch} = useCartContext();
+
+
+    const handleAddToCart = () => {
+        dispatch({
+            type: 'ADD_TO_CART',
+            payload: details
+        })
+    }
+
+    const handleRemoveFromCart = () => {
+        dispatch({
+            type: 'REMOVE_FROM_CART',
+            payload: details
+    })
+}
 
     return (
         <>
@@ -12,10 +30,10 @@ const ProductCard = ({ details }) => {
                         className="aspect-video object-fill"
                     />
                 </figure>
-                <div className="card-body p-0.5">
+                <div className="card-body p-1.5">
                     <h2 className="card-title line-clamp-1">{details.productName}
                         {details.new &&
-                            <div className="badge badge-secondary">New</div>
+                            <div className="badge badge-secondary ">New</div>
                         }
                     </h2>
                     <p className="line-clamp-2">{details.productDescription}</p>
@@ -28,9 +46,21 @@ const ProductCard = ({ details }) => {
                     <Ratings defaultRating={details.ratings} isEditable={false} />
                     {/* {console.log(details.ratings)} */}
 
-                    <div className="card-actions justify-between">
-                        <button className="btn btn-primary">Add To Cart</button>
-                        <button className="btn btn-info">Buy Now</button>
+                <div className="card-actions justify-between">
+                    {
+                    cart.some((p) => p.id === details.id) ? (
+                        <button 
+                        onClick={handleRemoveFromCart} 
+                        className="btn btn-warning w-full">
+                            Remove from Cart
+                        </button>
+                        ) : (
+                        <button onClick={handleAddToCart} className="btn btn-neutral w-full">
+                            Add To Cart
+                        </button>
+                        )
+                    }
+                        <button className="btn btn-info w-full">Buy Now</button>
                     </div>
                 </div>
             </div>
