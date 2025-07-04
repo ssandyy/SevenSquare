@@ -4,7 +4,7 @@ const ProductCard = ({ details }) => {
 
     return (
         <>
-            <div className="card bg-slate-300 shadow-xl p-6">
+            <div className="card bg-slate-300 shadow-xl w-[18rem] p-2">
                 <figure>
                     <img
                         src={details.image}
@@ -12,7 +12,7 @@ const ProductCard = ({ details }) => {
                         className="aspect-video object-fill"
                     />
                 </figure>
-                <div className="card-body">
+                <div className="card-body p-0.5">
                     <h2 className="card-title line-clamp-1">{details.productName}
                         {details.new &&
                             <div className="badge badge-secondary">New</div>

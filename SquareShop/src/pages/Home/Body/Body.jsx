@@ -1,17 +1,24 @@
-import ProductCard from "../../../components/Card/ProductCard"
-import { useCartContext } from "../../../contexts/CartContext/CartContext"
+import AllProducts from "../../../components/Products/AllProducts"
 
 const Body = () => {
-  const {products} = useCartContext()
-
+  // const {products} = useCartContext()
 
   return (
-    <div  className="grid grid-cols-3 gap-[1rem] max-md:grid-cols-1 max-lg:grid-cols-2 p-2">
-      {products.map((productsDetails)=>{
-        return <ProductCard key={productsDetails.id}  details={productsDetails} />
-      })}
+    <>
+        {/* <div  className="grid grid-cols-3 gap-[1rem] max-md:grid-cols-1 max-lg:grid-cols-2 p-2"> */}
+        {/* {products.map((productsDetails)=>{
+        return <ProductCard key={productsDetails.id} details={productsDetails} />
+        // })} */}
+        {/* </div> */}
       
+      
+    <div className="justify-center">
+        <AllProducts itemsPerPage={8} />
     </div>
+      
+    
+    
+    </>
   )
 }
 

@@ -1,5 +1,3 @@
-
-
 function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange }) {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
