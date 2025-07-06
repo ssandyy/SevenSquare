@@ -70,7 +70,8 @@ const CartContextProvider = ({ children }) => {
 }
 
 const useCartContext = () => {
-  return useContext(CartContext);
+  const context = useContext(CartContext);
+  return context;
 };
 
 export { CartContextProvider, useCartContext };
