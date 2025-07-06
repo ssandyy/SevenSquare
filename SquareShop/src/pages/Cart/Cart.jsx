@@ -13,12 +13,12 @@ const Cart = () => {
     });
   };
 
-  const updateQuantity = (id, quantity) => {
-    dispatch({
-      type: "UPDATE_CART_QUANTITY",
-      payload: { id, quantity: Number(quantity) },
-    });
-  };
+  // const updateQuantity = (id, quantity) => {
+  //   dispatch({
+  //     type: "UPDATE_CART_QUANTITY",
+  //     payload: { id, quantity: Number(quantity) },
+  //   });
+  // };
 
   const subTotal = cart.reduce((acc, item) => {
     return acc + item.price * item.quantity;

@@ -3,8 +3,8 @@ import AllProducts from "../../../components/Products/AllProducts";
 
 const Body = () => {
   // const {products} = useCartContext()
- 
-  
+
+
   return (
     <>
         {/* <div  className="grid grid-cols-3 gap-[1rem] max-md:grid-cols-1 max-lg:grid-cols-2 p-2"> */}
@@ -15,7 +15,7 @@ const Body = () => {
       
       
     <div className="flex justify-around">
-        <AllProducts itemsPerPage={8} />
+        <AllProducts />
     </div>
       
     

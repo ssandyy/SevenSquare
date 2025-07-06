@@ -1,6 +1,14 @@
 export const cartReducer = (state, action) => {
+  
+      if (action.type === 'SET_STATE') {
+      return {
+        ...state,
+        ...action.payload
+      };
+    }
+
   if (action.type === "ADD_TO_CART") {
-    console.log("Add cart reducer called");
+    // console.log("Add cart reducer called");
     return {
       ...state,
       cart: [...state.cart, action.payload],

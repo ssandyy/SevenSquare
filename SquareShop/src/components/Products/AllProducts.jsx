@@ -1,17 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useCartContext } from '../../contexts/CartContext/CartContext';
 import ProductCard from '../Card/ProductCard';
 import Pagination from '../Pagination/Pagination';
 
-const AllProducts = ({itemsPerPage}) => {
+const AllProducts = () => {
       const [page, setPage] = useState(1);
       // const {products} = useCartContext()
 
       //  const { state: {products, cart} } = useCartContext();
         // console.log(state);
 
-
-       const {state:{products}} = useCartContext();
+  const { state: { products } } = useCartContext();
+  const containerRef = useRef(null);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
+ 
        
       //  const {state:{products}, dispatch } = useCartContext();
 
@@ -21,6 +23,25 @@ const AllProducts = ({itemsPerPage}) => {
       //     payload: products
       //   })
       //  },[])
+
+
+      useEffect(() => {
+    const observer = new ResizeObserver(([entry]) => {
+      const width = entry.contentRect.width;
+
+      if (width >= 1536) setItemsPerPage(12);
+      else if (width >= 1280) setItemsPerPage(10);
+      else if (width >= 1024) setItemsPerPage(8);
+      else if (width >= 640) setItemsPerPage(6);
+      else setItemsPerPage(4);
+    });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
       
       
       if (!products || products.length === 0) {
@@ -33,10 +54,9 @@ const AllProducts = ({itemsPerPage}) => {
     
     
   return (
-    <div>
-        <div className="grid grid-cols-4 gap-[1rem] max-sm:grid-cols-1  max-md:grid-cols-2 max-lg:grid-cols-2 p-4 max-xl:grid-cols-3">
+    <div ref={containerRef}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 p-4 max-w-7xl mx-auto">
               {paginatedProducts.map((post) => (
-                
                   <ProductCard key={post.id} details={post} />
               ))}
         </div>

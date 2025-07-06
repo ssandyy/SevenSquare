@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import { cartReducer } from './cartReducer';
 
 
@@ -8,6 +8,7 @@ const CartContext = createContext();
 
 const CartContextProvider = ({ children }) => {
   // const [products, setProducts] = useState(['a']);
+
 
   const products = [...Array(15)].map(() => ({
     id: faker.string.uuid(),
@@ -34,6 +35,30 @@ const CartContextProvider = ({ children }) => {
     products,
     cart: [],
   })
+
+  useEffect(() => {
+    try {
+      // const stored = sessionStorage.getItem("databaseID");
+       const stored = localStorage.getItem("databaseID");
+      if (!stored || stored === "undefined") return;
+
+      const browserCaseData = JSON.parse(stored);
+      dispatch({
+        type: "SET_STATE",
+        payload: browserCaseData
+      });
+    } catch (error) {
+      console.error("Failed to parse sessionStorage:", error);
+    }
+  }, []);
+
+
+  useEffect(()=>{
+  //  sessionStorage.setItem("databaseID", JSON.stringify(state))
+   localStorage.setItem("databaseID", JSON.stringify(state))
+  },[state])
+
+  
 
   return (
   <CartContext.Provider value={{
