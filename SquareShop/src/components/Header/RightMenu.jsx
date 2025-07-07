@@ -3,7 +3,7 @@ import { useCartContext } from "../../contexts/CartContext/CartContext";
 
   const RightMenu = () => {
     
-    const { state: {cart} } = useCartContext();
+    const {state:{cart}} = useCartContext();
     const cartCount = cart.length;
     // using accumulator 
     const subTotal = cart.reduce((accumulator, currentValue)=> accumulator + (currentValue.price) * (currentValue.quantity), 0);
@@ -14,7 +14,7 @@ import { useCartContext } from "../../contexts/CartContext/CartContext";
     return (
       <>  
         <div className="flex-none">
-        {/* Cart Dropdown */}
+        {/* Cart Dropdown */} 
         <div className="dropdown dropdown-end duration-200">
           <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
             <div className="indicator">

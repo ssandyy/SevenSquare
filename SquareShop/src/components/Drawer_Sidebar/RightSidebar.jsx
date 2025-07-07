@@ -1,5 +1,6 @@
 import FilterBar from "../FilterBar/FilterBar"
 import RightMenu from "../Header/RightMenu"
+import SearchField from "../Header/SearchField"
 
 const RightSidebar = () => {
   return (
@@ -43,11 +44,7 @@ const RightSidebar = () => {
         
         <div className="menu bg-base-200 text-base-content min-h-full w-80 p-4 space-y-4">
           {/* ✅ Search inside drawer */}
-          <input
-            type="text"
-            placeholder="Search"
-            className="input input-bordered w-full"
-          />
+          <SearchField />
 
           {/* ✅ Cart/Profile inside drawer */}
           <RightMenu />

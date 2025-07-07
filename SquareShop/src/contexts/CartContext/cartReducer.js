@@ -1,11 +1,25 @@
 export const cartReducer = (state, action) => {
   
-      if (action.type === 'SET_STATE') {
+    if (action.type === 'SET_STATE') {
+    return {
+      ...state,
+      ...action.payload
+    };
+    }
+
+    if(action.type === 'FILTERED_PRODUCTS'){
       return {
         ...state,
-        ...action.payload
-      };
+        products: action.payload
+      }
     }
+
+    if(action.type === "SET_PRODUCTS"){
+         
+    state = {...state, products: action.payload};
+    return state;
+
+      }
 
   if (action.type === "ADD_TO_CART") {
     // console.log("Add cart reducer called");
@@ -21,6 +35,7 @@ export const cartReducer = (state, action) => {
       cart: state.cart.filter((item) => item.id !== action.payload.id),
     };
   }
+  
 
   if (action.type === "UPDATE_CART_QUANTITY") {
     return {

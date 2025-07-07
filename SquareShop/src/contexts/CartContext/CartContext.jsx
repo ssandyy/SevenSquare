@@ -10,7 +10,7 @@ const CartContextProvider = ({ children }) => {
   // const [products, setProducts] = useState(['a']);
 
 
-  const products = [...Array(15)].map(() => ({
+  const products = [...Array(20)].map(() => ({
     id: faker.string.uuid(),
     productName: faker.commerce.productName(),
     productDescription: faker.commerce.productDescription(),
@@ -32,6 +32,7 @@ const CartContextProvider = ({ children }) => {
 
   //using reducer
   const [state, dispatch] = useReducer(cartReducer, {
+    unfilteredProducts: products,
     products,
     cart: [],
   })

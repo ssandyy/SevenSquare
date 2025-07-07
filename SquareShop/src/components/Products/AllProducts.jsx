@@ -26,11 +26,11 @@ const AllProducts = () => {
 
 
       useEffect(() => {
-    const observer = new ResizeObserver(([entry]) => {
+      const observer = new ResizeObserver(([entry]) => {
       const width = entry.contentRect.width;
 
-      if (width >= 1536) setItemsPerPage(12);
-      else if (width >= 1280) setItemsPerPage(10);
+      if (width >= 1536) setItemsPerPage(16);
+      else if (width >= 1280) setItemsPerPage(12);
       else if (width >= 1024) setItemsPerPage(8);
       else if (width >= 640) setItemsPerPage(6);
       else setItemsPerPage(4);
@@ -44,16 +44,21 @@ const AllProducts = () => {
   }, []);
       
       
-      if (!products || products.length === 0) {
-             return <p className="text-center text-gray-500">No products available.</p>;
-    }
+    //   if (!products || products.length === 0) {
+    //          return <p className="text-center text-gray-500">No products available.</p>;
+    // }
 
     const paginationStartIndex = (page - 1) * itemsPerPage;
     const paginatedProducts = products.slice(paginationStartIndex, paginationStartIndex + itemsPerPage)
 
-    
-    
   return (
+    <>
+    {products.length <=0 ? (
+        <div className="p-6 text-center justify-end text-gray-600">
+        <h2 className="text-2xl font-semibold">No Product Found 🛒</h2>
+      </div>
+          ):(
+
     <div ref={containerRef}>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 p-4 max-w-7xl mx-auto">
               {paginatedProducts.map((post) => (
@@ -67,6 +72,10 @@ const AllProducts = () => {
             onPageChange={setPage}
         />
     </div>
+    )
+    }
+    
+    </>
   )
 }
 
