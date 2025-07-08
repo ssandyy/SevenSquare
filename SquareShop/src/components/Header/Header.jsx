@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import RightSidebar from "../Drawer_Sidebar/RightSidebar";
 import RightMenu from "./RightMenu";
 import SearchField from "./SearchField";
+import Logo from "../Logo";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ const Header = () => {
     <div className="navbar bg-gray-500 sticky top-0 z-50 shadow-sm">
       <div className="flex-1">
         <button onClick={()=> navigate('/')} className="btn btn-ghost text-xl">
-            SquareShop
+            <Logo />
         </button>
       </div>
       
