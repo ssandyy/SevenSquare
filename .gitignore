@@ -1,0 +1,6 @@
+# .gitignore
+nailartdemo/nail-art-vision-guide.zip
+*.zip
+node_modules/
+dist/
+.env
