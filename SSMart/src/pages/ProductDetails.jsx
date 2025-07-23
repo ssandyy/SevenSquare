@@ -13,14 +13,14 @@ const ProductDetails = () => {
   const { products } = useContext(ProductContext);
   const product = products.find((p) => String(p.id) === id);
 
-  const { addToCart, removeFromCart, incrementQuantity, decrementQuantity, cart } = useContext(CartContext);
+  const { addToCart, removeFromCart, incrementQuantity, decrementQuantity, cart} = useContext(CartContext);
   const cartItem = cart.find((item) => item.id === product?.id);
   const cartQuantity = cartItem ? cartItem.quantity : 0;
   const colors = ['#27AE60', '#EB5757', '#F2C94C', '#2F80ED', '#000000'];
   const sizes = [16, 20, 28, 28, 28];
   const [selectedColor, setSelectedColor] = useState(colors[0]);
   const [selectedSize, setSelectedSize] = useState(sizes[0]);
- 
+
 
   if (!product) {
     return <div>Product not found</div>;
@@ -131,17 +131,23 @@ const ProductDetails = () => {
 
         {/* Quantity */}
         <div className="flex items-center gap-3 mt-2">
-        <h4 className="text-sm font-medium mb-2 mt-2">Quantity: </h4>
+          <h4 className="text-sm font-medium mb-2 mt-2">Quantity: </h4>
           <button
             onClick={() => decrementQuantity(product)}
             className="w-10 h-10 border rounded-full flex items-center justify-center text-xl"
+            disabled={cartQuantity === 0}
           >
             −
           </button>
           <span className="w-8 text-center text-base">{cartQuantity}</span>
-          {/* {console.log(cartItem.quantity)} */}
           <button
-            onClick={() => incrementQuantity(product)}
+            onClick={() => {
+              if (cartQuantity === 0) {
+                addToCart(product);
+              } else {
+                incrementQuantity(product);
+              }
+            }}
             className="w-10 h-10 border rounded-full flex items-center justify-center text-xl"
           >
             +
@@ -159,7 +165,14 @@ const ProductDetails = () => {
           
           :
           <button 
-          onClick={() => addToCart(product)}
+          onClick={() => {
+
+            if (cartQuantity === 0) {
+              addToCart(product);
+            } else {
+              incrementQuantity(product);
+            }
+          }}
            className="flex-1 bg-indigo-100 text-indigo-700 font-medium px-4 py-2 rounded-full hover:bg-indigo-200 transition">
             Add To Cart
           </button>}

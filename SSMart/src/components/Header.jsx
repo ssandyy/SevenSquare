@@ -1,10 +1,12 @@
 import React, { useContext } from "react";
 import { SidebarContext } from "../contexts/SidebarContext";
 import { Link } from "react-router-dom";
-import { ShoppingBag } from "lucide-react";
+import { Badge, ShoppingBag } from "lucide-react";
+import CartContext from "../contexts/CartContext";
 
 const Header = () => {
   const { toggleSidebar } = useContext(SidebarContext);
+  const { cartQty } = useContext(CartContext);
   return (
     <div className="flex sticky top-0 z-50 items-center justify-between p-4 bg-white shadow-md">
       <div className="text-xl font-bold">
@@ -14,8 +16,13 @@ const Header = () => {
 
       <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 gap-5">
         <div>
-          <Link to="/cart" className="flex items-center gap-2">
+          <Link to="/cart" className="flex items-center gap-2 relative">
             <ShoppingBag className="w-6 h-6" />
+            {cartQty > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs border-2 border-white shadow transition-all duration-200">
+                {cartQty}
+              </span>
+            )}
           </Link>
         </div>
 
