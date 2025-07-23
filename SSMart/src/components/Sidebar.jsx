@@ -3,9 +3,11 @@ import { SidebarContext } from "../contexts/SidebarContext";
 import { Link } from "react-router-dom";
 import Button from "./parts/Button";
 import CartContext from "../contexts/CartContext";
+import CartItem from "./CartItem";
 
 const Sidebar = () => {
   const { isOpen, toggleSidebar } = useContext(SidebarContext);
+  const { cart } = useContext(CartContext);
 
 
   return (
@@ -37,7 +39,8 @@ const Sidebar = () => {
           <Link to="/products">Products</Link>
           <Link to="/cart">
             <div className="flex items-center gap-2">
-              <span className="text-sm">Cart</span>
+              <span className="text-sm">Cart Page</span>
+              {/* <CartItem>{cart.title}</CartItem> */}
               {/* <span className="text-sm">{cart.length}</span> */}
             </div>
           </Link>
