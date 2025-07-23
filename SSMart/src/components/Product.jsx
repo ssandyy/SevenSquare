@@ -157,7 +157,7 @@ const Product = ({ product }) => {
                       </button>
                       <button
                         className="ml-2 text-xs text-white bg-gradient-to-r from-red-600 to-red-400 hover:from-red-700 hover:to-red-500 rounded px-3 py-1"
-                        onClick={() => removeFromCart(productz)}
+                        onClick={() => removeFromCart(productz.id)}
                       >
                         Remove
                       </button>

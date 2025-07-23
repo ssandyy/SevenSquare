@@ -1,31 +1,26 @@
 import React, { useState } from 'react';
-import { Star, Heart } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { Star, Heart, Home, HomeIcon } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
 import { useContext } from 'react';
 import { ProductContext } from '../contexts/ProductContext';
 import CartContext from '../contexts/CartContext';
+import { CartItem } from '../components';
 
 
+const ProductDetails = () => {
 
-const ProductDetails = ({t}) => {
-
-  const {id} = useParams();
-  const {products} = useContext(ProductContext);
+  const { id } = useParams();
+  const { products } = useContext(ProductContext);
   const product = products.find((p) => String(p.id) === id);
-  console.log(product);
-  const {addToCart, removeFromCart, incrementQuantity, decrementQuantity, cart} = useContext(CartContext);
 
-
-  const cartItem = cart.find(item => item.id === product.id);
-  const quantity = cartItem ? cartItem.quantity : 1;
-
-  
-  // const {name, title, price, description, category,rating, image} = 
-
-  const [selectedColor, setSelectedColor] = useState(1);
-  const [selectedSize, setSelectedSize] = useState(1);
+  const { addToCart, removeFromCart, incrementQuantity, decrementQuantity, cart } = useContext(CartContext);
+  const cartItem = cart.find((item) => item.id === product?.id);
+  const cartQuantity = cartItem ? cartItem.quantity : 0;
   const colors = ['#27AE60', '#EB5757', '#F2C94C', '#2F80ED', '#000000'];
   const sizes = [16, 20, 28, 28, 28];
+  const [selectedColor, setSelectedColor] = useState(colors[0]);
+  const [selectedSize, setSelectedSize] = useState(sizes[0]);
+ 
 
   if (!product) {
     return <div>Product not found</div>;
@@ -36,8 +31,8 @@ const ProductDetails = ({t}) => {
       {/* Left Column */}
       <div className="space-y-6">
         {/* Breadcrumb */}
-        <div className="text-sm text-indigo-600 font-medium">
-          Travel / {product.category}
+        <div className="flex items-center gap-2 text-sm text-indigo-600 font-medium">
+          <Link to="/"> <HomeIcon /> </Link> / {product.category}
         </div>
 
         {/* Title & Wishlist */}
@@ -57,8 +52,8 @@ const ProductDetails = ({t}) => {
 
         {/* Price & Discount */}
         <div className="flex items-center gap-4 text-lg font-semibold">
-          <span className="text-black">{product.price}</span>
-          <span className="line-through text-gray-400 text-base">$100.00</span>
+          <span className="text-black">{(product.price)+10}</span>
+          <span className="line-through text-gray-400 text-base">${product.price}</span>
           <span className="text-indigo-600 text-sm">20% off</span>
         </div>
 
@@ -81,7 +76,7 @@ const ProductDetails = ({t}) => {
               <img
                 src={product.image}
                 alt="thumb"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-fill"
               />
             </div>
           ))}
@@ -143,10 +138,10 @@ const ProductDetails = ({t}) => {
           >
             −
           </button>
-          <span className="w-8 text-center text-base">{quantity}</span>
-          {console.log(quantity)}
+          <span className="w-8 text-center text-base">{cartQuantity}</span>
+          {/* {console.log(cartItem.quantity)} */}
           <button
-            onClick={() => incrementQuantity(product.quantity)}
+            onClick={() => incrementQuantity(product)}
             className="w-10 h-10 border rounded-full flex items-center justify-center text-xl"
           >
             +
@@ -155,11 +150,19 @@ const ProductDetails = ({t}) => {
 
         {/* Action Buttons */}
         <div className="flex gap-4 mt-4">
+          {cartQuantity > 0 ? 
+          <button 
+          onClick={() => removeFromCart(product.id)}
+           className="flex-1 bg-red-100 text-red-700 font-medium px-4 py-2 rounded-full hover:bg-indigo-200 transition">
+            Remove from Cart
+          </button>
+          
+          :
           <button 
           onClick={() => addToCart(product)}
            className="flex-1 bg-indigo-100 text-indigo-700 font-medium px-4 py-2 rounded-full hover:bg-indigo-200 transition">
             Add To Cart
-          </button>
+          </button>}
           <button className="flex-1 bg-indigo-600 text-white font-medium px-4 py-2 rounded-full hover:bg-indigo-700 transition">
             Buy Now
           </button>

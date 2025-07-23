@@ -1,8 +1,10 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 export const CartContext = createContext();
 
+
 export const CartProvider = ({ children }) => {
+  
 
   const [cart, setCart] = useState([]);
   console.log(cart);
@@ -12,23 +14,30 @@ export const CartProvider = ({ children }) => {
       const existing = prevCart.find((item) => item.id === product.id);
       if (existing) {
         return prevCart.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
         );
       } else {
-        return [...prevCart, { ...product, quantity: 1 }];
+        // Store the original product quantity as maxQuantity
+        return [
+          ...prevCart,
+          { ...product, quantity: 1, maxQuantity: product.quantity }
+        ];
       }
     });
-    console.log(cart);
-  }
+  };
 
-  const removeFromCart = (product) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== product.id));
+  const removeFromCart = (id) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
   }
 
   const incrementQuantity = (product) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.id === product.id && item.quantity < product.quantity ? { ...item, quantity: item.quantity + 1 } : item
+        item.id === product.id && item.quantity < item.maxQuantity
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
       )
     );
   }
@@ -37,7 +46,7 @@ export const CartProvider = ({ children }) => {
     setCart((prevCart) =>
       prevCart
         .map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity - 1 } : item
+          item.id === product.id ? item.quantity > 0 ? { ...item, quantity: item.quantity - 1 } : item : item
         )
         .filter((item) => item.quantity > 0)
     );
