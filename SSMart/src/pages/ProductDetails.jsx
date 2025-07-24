@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useContext } from 'react';
 import { ProductContext } from '../contexts/ProductContext';
 import CartContext from '../contexts/CartContext';
-import { CartItem } from '../components';
+import { getDiscountedPrice } from '../contexts/CartContext';
 
 
 const ProductDetails = () => {
@@ -16,16 +16,18 @@ const ProductDetails = () => {
   const { addToCart, removeFromCart, incrementQuantity, decrementQuantity, cart} = useContext(CartContext);
   const cartItem = cart.find((item) => item.id === product?.id);
   const cartQuantity = cartItem ? cartItem.quantity : 0;
-  const colors = ['#27AE60', '#EB5757', '#F2C94C', '#2F80ED', '#000000'];
-  const sizes = [16, 20, 28, 28, 28];
-  const [selectedColor, setSelectedColor] = useState(colors[0]);
-  const [selectedSize, setSelectedSize] = useState(sizes[0]);
+  const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || '');
+  const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || '');
 
+  console.log(product);
 
   if (!product) {
     return <div>Product not found</div>;
   }
   
+  // Use the utility for price/discount
+  const { offerPrice, originalPrice, discountPercent } = getDiscountedPrice(product.price);
+
   return (
     <div className="max-w-7xl mx-auto p-6 bg-white rounded-xl border shadow-md grid md:grid-cols-2 gap-8">
       {/* Left Column */}
@@ -52,9 +54,9 @@ const ProductDetails = () => {
 
         {/* Price & Discount */}
         <div className="flex items-center gap-4 text-lg font-semibold">
-          <span className="text-black">{(product.price)+10}</span>
-          <span className="line-through text-gray-400 text-base">${product.price}</span>
-          <span className="text-indigo-600 text-sm">20% off</span>
+          <span className="text-black">${offerPrice}</span>
+          <span className="line-through text-gray-400 text-base">${originalPrice}</span>
+          <span className="text-indigo-600 text-sm">{discountPercent}% off</span>
         </div>
 
         {/* Rating */}
@@ -63,7 +65,7 @@ const ProductDetails = () => {
             <Star key={i} size={18} fill="#FBBF24" stroke="#FBBF24" />
           ))}
           <Star size={18} stroke="#FBBF24" />
-          <span className="text-sm text-gray-600 ml-2">1624 reviews</span>
+          <span className="text-sm text-gray-600 ml-2">{product.rating.count} reviews</span>
         </div>
 
         {/* Thumbnails */}
@@ -86,11 +88,11 @@ const ProductDetails = () => {
       {/* Right Column */}
       <div className="flex flex-col gap-6">
         {/* Main Image */}
-        <div className="rounded-xl overflow-hidden w-full aspect-square bg-gray-100">
+        <div className="rounded-xl overflow-hidden w-120 aspect-square bg-gray-100">
           <img
             src={product.image}
             alt="Product"
-            className="w-full h-full object-fit"
+            className="w-120 h-120 object-fit"
           />
         </div>
 
@@ -98,11 +100,11 @@ const ProductDetails = () => {
         <div>
           <h4 className="text-sm font-medium mb-2">Bag Color</h4>
           <div className="flex gap-3">
-            {colors.map((color, i) => (
+            {product.colors.map((color, i) => (
               <button
                 key={i}
-                onClick={() => setSelectedColor(i)}
-                className={`w-8 h-8 rounded-full border-2 ${selectedColor === i ? 'border-red-500' : 'border-gray-300'}`}
+                onClick={() => setSelectedColor(color)}
+                className={`w-8 h-8 rounded-full border-2 ${selectedColor === color ? 'border-red-500' : 'border-gray-300'}`}
                 style={{ backgroundColor: color }}
               />
             ))}
@@ -113,12 +115,12 @@ const ProductDetails = () => {
         <div>
           <h4 className="text-sm font-medium mb-2 mt-2">Bag Size</h4>
           <div className="flex gap-3">
-            {sizes.map((size, i) => (
+            {product.sizes.map((size, i) => (
               <button
                 key={i}
-                onClick={() => setSelectedSize(i)}
+                onClick={() => setSelectedSize(size)}
                 className={`w-10 h-10 rounded-full text-sm font-medium flex items-center justify-center border ${
-                  selectedSize === i
+                  selectedSize === size
                     ? 'bg-indigo-600 text-white'
                     : 'bg-white text-black border-gray-300'
                 }`}
@@ -152,6 +154,7 @@ const ProductDetails = () => {
           >
             +
           </button>
+          
         </div>
 
         {/* Action Buttons */}

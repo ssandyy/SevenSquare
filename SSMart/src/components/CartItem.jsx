@@ -1,11 +1,15 @@
 import { Trash, Plus, Minus } from "lucide-react";
 import { useContext } from "react";
 import CartContext from "../contexts/CartContext";
+import { getDiscountedPrice } from "../contexts/CartContext";
 
 const CartItem = ({ item }) => {
   const { id, image, title, quantity, price } = item;
   const { removeFromCart, incrementQuantity, decrementQuantity } = useContext(CartContext);
-  const { cart } = useContext(CartContext);
+
+  // Calculate discounted price for this item
+  const offerPrice = parseFloat(getDiscountedPrice(price).offerPrice);
+  const itemTotal = (offerPrice * quantity).toFixed(2);
 
   return (
     <>
@@ -36,8 +40,8 @@ const CartItem = ({ item }) => {
           >
             <Plus className="w-4 h-4" />
           </button>
-          <span className="text-xs text-gray-500 ml-4">${price}</span>
-          <span className="text-xs font-semibold ml-2">Total: ${(price * quantity).toFixed(2)}</span>
+          <span className="text-xs text-gray-500 ml-4">${offerPrice.toFixed(2)}</span>
+          <span className="text-xs font-semibold ml-2">Total: ${itemTotal}</span>
         </div>
       </div>
       {/* Delete */}

@@ -2,8 +2,9 @@ import React, { useState, useContext } from "react";
 import Button from "./parts/Button";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../contexts/CartContext";
+import { getDiscountedPrice } from '../contexts/CartContext';
 
-const Product = ({ product }) => {
+const Product = ({ product }) => {  
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const { cart, addToCart, removeFromCart, incrementQuantity, decrementQuantity } = useContext(CartContext);
@@ -17,6 +18,7 @@ const Product = ({ product }) => {
       {product.map((productz) => {
         const cartItem = cart.find((item) => item.id === productz.id);
         const inCart = !!cartItem;
+        const { offerPrice, originalPrice, discountPercent } = getDiscountedPrice(productz.price);
         return (
           <div
             key={productz.id}
@@ -48,7 +50,7 @@ const Product = ({ product }) => {
                 style="bg-green-400 hover:bg-green-600"
                 type="button"
                 as="a"
-                onClick={() => navigate(`/product/${productz.id}`)}
+                onClick={() => navigate(`/product/${productz.id}`)} 
                 title="View Details"
               >
                 <svg
@@ -81,6 +83,7 @@ const Product = ({ product }) => {
                 </span>
                 
               </div>
+              
               <div className="px-4 pb-4 w-full flex flex-col gap-2">
                 {/* Title below */}
                 <h5 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-white mb-2 text-left">
@@ -88,16 +91,8 @@ const Product = ({ product }) => {
                     ? productz.title.substring(0, 20) + "..."
                     : productz.title}
                 </h5>
-                <span className="absolute right-4 bg-purple-100 text-green-800 text-xs font-bold px-2 py-1 rounded">
-                  only {productz.quantity} left
-                </span>
-                {/* Price and Rating side by side */}
-                <div className="flex items-center justify-between mb-2">
-                  
-                  <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                    ${productz.price}
-                  </span>
-                  <div className="flex items-center space-x-1" title={`Rating: ${productz.rating.rate}`}>
+
+                <div className="flex items-center space-x-1" title={`Rating: ${productz.rating.rate}`}>
                     {[1, 2, 3, 4, 5].map((i) => (
                       <svg
                         key={i}
@@ -114,7 +109,18 @@ const Product = ({ product }) => {
                       {productz.rating.rate}
                     </span>
                   </div>
+                
+                {/* Price and Rating side by side */}
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">
+                    ${offerPrice}
+                  </span>
+                  <span className="line-through text-gray-400 text-base">${originalPrice}</span>
+                  <span className="text-indigo-600 text-sm">{discountPercent}% off</span>
                   
+                  <span className=" bg-purple-100 text-green-800 text-xs font-bold px-2 py-1 rounded">
+                  only {productz.quantity} left
+                </span>
                 </div>
                 {/* Add/Remove/Quantity controls side by side */}
                 <div className="flex items-center justify-center gap-2 mb-2">

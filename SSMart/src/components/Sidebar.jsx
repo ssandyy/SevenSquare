@@ -8,7 +8,7 @@ import { ShoppingBag, Trash, Trash2, Trash2Icon } from "lucide-react";
 
 const Sidebar = () => {
   const { isOpen, toggleSidebar } = useContext(SidebarContext);
-  const { cart, removeFromCart } = useContext(CartContext);
+  const { cart, removeFromCart, cartTotal, totalDiscountedPrice} = useContext(CartContext);
 
   return (
     <>
@@ -75,17 +75,11 @@ const Sidebar = () => {
                     </div>
                 );
               })}
-              {
-              cart.length > 0 && (
+              {cart.length > 0 && (
                 <div className="flex items-center justify-between gap-2 py-2">
                   <span>
                     Total: $
-                    {cart
-                      .reduce(
-                        (total, item) => total + item.price * item.quantity,
-                        0
-                      )
-                      .toFixed(2)}
+                    {totalDiscountedPrice}
                   </span>
                 </div>
               )}

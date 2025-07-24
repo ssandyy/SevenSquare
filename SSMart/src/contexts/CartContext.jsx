@@ -3,19 +3,55 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 export const CartContext = createContext();
 
 
+export function getDiscountedPrice(originalPrice) {
+  const min = 10, max = 40;
+  const pseudoRandom = Math.abs(Math.sin(originalPrice)) % 1; // deterministic for same price
+  const discountPercent = Math.floor(pseudoRandom * (max - min + 1)) + min;
+  const offerPrice = (originalPrice * (1 - discountPercent / 100)).toFixed(2);
+  return { offerPrice, originalPrice, discountPercent };
+}
+
+
 export const CartProvider = ({ children }) => {
   
 
   const [cart, setCart] = useState([]);
   const [cartQty, setCartQty] = useState(0);
+  const [cartTotal, setCartTotal] = useState(0);
+  const [totalSaving, setTotalSaving] = useState(0);
+  const [discountedPrice, setDiscountedPrice] = useState(0);
+  const [totalDiscountedPrice, setTotalDiscountedPrice] = useState(0);
 
-
+  // total quantity
   useEffect(() => {
     const totalQty = cart.reduce((acc, item) => acc + item.quantity, 0);
     setCartQty(totalQty);
     console.log("Total Qty:", totalQty); // Log the calculated value
   }, [cart]);
+
+
+  useEffect(() => {
+    const discount = cart.reduce((acc, item) => acc + item.price * item.quantity - getDiscountedPrice(item.price).offerPrice * item.quantity, 0)
+    setTotalSaving(discount.toFixed(2))
+  }, [cart])
+  
+  // total price
+  useEffect(() => {
+    const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity,0).toFixed(2)
+    setCartTotal(totalAmount)
+  }, [cart])
  
+  useEffect(() => {
+    const totalAmount = cart.reduce((total, item) => total + getDiscountedPrice(item.price).offerPrice * item.quantity,0).toFixed(2)
+    setTotalDiscountedPrice(totalAmount)
+  }, [cart])
+
+
+  useEffect(() => {
+    const discountedPrice = cart.reduce((total, item) => total + getDiscountedPrice(item.price).offerPrice * item.quantity,0).toFixed(2)
+    setDiscountedPrice(discountedPrice)
+  }, [cart])
+
 
   const addToCart = (product) => {
     setCart((prevCart) => {
@@ -84,7 +120,7 @@ export const CartProvider = ({ children }) => {
 
   return (
     // <CartContext.Provider value={{ cart, addToCart, removeFromCart}}>
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, incrementQuantity, decrementQuantity, cartQty}}>
+    <CartContext.Provider value={{ cart, discountedPrice, addToCart, removeFromCart, incrementQuantity, totalDiscountedPrice, decrementQuantity, cartQty, cartTotal, totalSaving}}>
       {children}
     </CartContext.Provider>
   );
