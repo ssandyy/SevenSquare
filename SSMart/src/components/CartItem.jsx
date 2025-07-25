@@ -41,7 +41,7 @@ const CartItem = ({ item }) => {
             <Plus className="w-4 h-4" />
           </button>
           <span className="text-xs text-gray-500 ml-4">${offerPrice.toFixed(2)}</span>
-          <span className="text-xs font-semibold ml-2">Total: ${itemTotal}</span>
+          <span className="text-xs font-semibold ml-2">Total ${itemTotal}</span>
         </div>
       </div>
       {/* Delete */}

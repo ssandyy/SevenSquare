@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { CartContext } from "../contexts/CartContext";
 import { getDiscountedPrice } from '../contexts/CartContext';
 
-const Product = ({ product }) => {  
+const Product = ({ product,  cardClassName = "", containerClassName = "" }) => {  
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const { cart, addToCart, removeFromCart, incrementQuantity, decrementQuantity } = useContext(CartContext);
@@ -14,7 +14,7 @@ const Product = ({ product }) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className={` ${containerClassName}`}>
       {product.map((productz) => {
         const cartItem = cart.find((item) => item.id === productz.id);
         const inCart = !!cartItem;
@@ -22,7 +22,7 @@ const Product = ({ product }) => {
         return (
           <div
             key={productz.id}
-            className="group relative mt-10 w-[320px] max-w-sm bg-white border border-gray-200 rounded-2xl shadow-md transition-transform duration-200 hover:scale-105 hover:shadow-xl dark:bg-gray-800 dark:border-gray-700"
+            className={`group relative mt-10 w-[320px] max-w-sm bg-white border border-gray-200 rounded-2xl shadow-md transition-transform duration-200 hover:scale-105 hover:shadow-xl dark:bg-gray-800 dark:border-gray-700 ${cardClassName}`}
           >
             <div className="absolute top-5 -right-10 group-hover:right-5 z-20 flex flex-col items-center justify-center gap-y-2 opacity-0 group-hover:opacity-100 transition-all">
               {/* Wishlist Button */}

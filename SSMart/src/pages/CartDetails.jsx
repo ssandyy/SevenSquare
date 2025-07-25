@@ -3,25 +3,22 @@ import {  ProductContext } from "../contexts/ProductContext";
 import CartContext, { getDiscountedPrice } from "../contexts/CartContext";
 import { Link } from "react-router-dom";
 import { Product } from "../components";
+import Pagination from "../components/pagination/Pagination";
+import usePagination from "../components/pagination/usePagination";
 
 
 const CartDetails = () => {
   const { products} = useContext(ProductContext);
   const { cart, incrementQuantity, decrementQuantity, removeFromCart, quantity, cartTotal, totalSaving, discountedPrice, totalDiscountedPrice} = useContext(CartContext);
+  const { currentPage, setCurrentPage, currentProducts, totalPages, itemsPerPage} = usePagination(products, 3);
 
   
   // Find the category of the first product in the cart
   const mainCategory = cart.length > 0 ? cart[0].category : null;
-  let filteredProducts = products;
-  if (mainCategory) {
-    filteredProducts = products.filter((p) => p.category === mainCategory);
-  }
-
-  // Sort by rating (descending) and take top 3
-  const topRatedProducts = filteredProducts
-    .slice()
-    .sort((a, b) => (b.rating?.rate || 0) - (a.rating?.rate || 0))
-    .slice(0, 3);
+  const peopleAlsoBoughtProducts = products
+  .filter(p => p.category !== mainCategory) // not in cart's main category
+  .sort((a, b) => b.rating.rate - a.rating.rate)
+  .slice(0, 3);
 
   // Calculate store pickup charge: 10% of discounted price for each unique product (by ID)
   const uniqueProducts = Array.from(new Map(cart.map(p => [p.id, p])).values());
@@ -42,10 +39,8 @@ const CartDetails = () => {
             Shopping Cart
           </h2>
           
-          <div class="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
-          
+          <div class="mt-4 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-6" >
             <div class="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
-            
             {cart.map((product) => ( 
               <div class="space-y-6">
                 <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
@@ -195,46 +190,38 @@ const CartDetails = () => {
               </div>
              
               ))}
-              
-              {/* People also bought - always visible, horizontal scroll */}
-              {cart.length > 0 ? (
-              <div className="mt-2">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  People also bought
-                </h3>
-                <Product product={topRatedProducts} />
-              </div>
-              ): (
-                <div className="mt-2 flex flex-col items-center justify-center gap-2">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-8 h-8 inline-block align-middle text-yellow-400"
-                    >
-                      <circle cx="12" cy="12" r="10" fill="#FDE68A" stroke="#F59E42" strokeWidth="1.5" />
-                      <ellipse cx="9" cy="10" rx="1.2" ry="1.5" fill="#444" />
-                      <ellipse cx="15" cy="10" rx="1.2" ry="1.5" fill="#444" />
-                      <path d="M9 16c1-1 5-1 6 0" stroke="#444" strokeWidth="1.5" strokeLinecap="round" />
-                    </svg>
-                    No products in cart
-                  </h3>
-                  <p className="text-gray-500 text-base mt-1">Your cart is feeling lonely! 🛒</p>
-                  <p className="text-gray-400 text-sm">Add some amazing products and make it happy.</p>
-                  <a
-                    href="/"
-                    className="mt-2 inline-block bg-indigo-600 text-white px-4 py-2 rounded-full shadow hover:bg-indigo-700 transition"
-                  >
-                    Go Shopping
-                  </a>
-                </div>
-              )}
+          
             </div>
 
             <div class="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
+            <div class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
+                <form class="space-y-4">
+                  <div>
+                    <label
+                      for="voucher"
+                      class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      {" "}
+                      Do you have a voucher or gift card?{" "}
+                    </label>
+                    <input
+                      type="text"
+                      id="voucher"
+                      class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
+                      placeholder=""
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                  >
+                    Apply Code
+                  </button>
+                </form>
+              </div>
+
+
               <div class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
                 <p class="text-xl font-semibold text-gray-900 dark:text-white">
                   Order summary
@@ -289,7 +276,7 @@ const CartDetails = () => {
 
                   <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
                     <dt class="text-base font-bold text-gray-900 dark:text-white">
-                      Totals
+                      Total
                     </dt>
                     <dd class="text-base font-bold text-gray-900 dark:text-white">
                       ${total}
@@ -334,36 +321,12 @@ const CartDetails = () => {
                 </div>
               </div>
 
-              <div class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
-                <form class="space-y-4">
-                  <div>
-                    <label
-                      for="voucher"
-                      class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      {" "}
-                      Do you have a voucher or gift card?{" "}
-                    </label>
-                    <input
-                      type="text"
-                      id="voucher"
-                      class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
-                      placeholder=""
-                      required
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                  >
-                    Apply Code
-                  </button>
-                </form>
-              </div>
+              
             </div>
           </div>
         </div>
       </section>
+
     </div>
   );
 };
