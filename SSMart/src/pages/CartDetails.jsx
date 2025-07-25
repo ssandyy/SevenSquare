@@ -1,24 +1,11 @@
-import React, { useContext } from "react";
-import {  ProductContext } from "../contexts/ProductContext";
-import CartContext, { getDiscountedPrice } from "../contexts/CartContext";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { Product } from "../components";
-import Pagination from "../components/pagination/Pagination";
-import usePagination from "../components/pagination/usePagination";
+import CartContext, { getDiscountedPrice } from "../contexts/CartContext";
 
 
 const CartDetails = () => {
-  const { products} = useContext(ProductContext);
-  const { cart, incrementQuantity, decrementQuantity, removeFromCart, quantity, cartTotal, totalSaving, discountedPrice, totalDiscountedPrice} = useContext(CartContext);
-  const { currentPage, setCurrentPage, currentProducts, totalPages, itemsPerPage} = usePagination(products, 3);
+  const { cart, incrementQuantity, decrementQuantity, removeFromCart, cartTotal, totalSaving, discountedPrice, totalDiscountedPrice} = useContext(CartContext);
 
-  
-  // Find the category of the first product in the cart
-  const mainCategory = cart.length > 0 ? cart[0].category : null;
-  const peopleAlsoBoughtProducts = products
-  .filter(p => p.category !== mainCategory) // not in cart's main category
-  .sort((a, b) => b.rating.rate - a.rating.rate)
-  .slice(0, 3);
 
   // Calculate store pickup charge: 10% of discounted price for each unique product (by ID)
   const uniqueProducts = Array.from(new Map(cart.map(p => [p.id, p])).values());
@@ -191,6 +178,62 @@ const CartDetails = () => {
              
               ))}
           
+              {/* People also bought - always visible, horizontal scroll */}
+              {/* {cart.length > 0 ? (
+              <div className="mt-8">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  People also bought
+                </h3>
+                <div className="w-full">
+                  <Product
+                    product={peopleAlsoBoughtProducts}
+                    containerClassName="
+                      flex flex-row gap-4 overflow-x-auto
+                      md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6
+                      hide-scrollbar
+                    "
+                    cardClassName="
+                      min-w-[70vw] max-w-xs sm:min-w-[260px] md:min-w-0
+                      flex-shrink-0
+                      bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-200
+                      border border-gray-200 p-4 flex flex-col items-center
+                    "
+                  />
+                </div>
+                <Pagination totalItems={products.length} itemsPerPage={itemsPerPage} currentPage={currentPage} onPageChange={setCurrentPage} />
+
+                
+              </div>
+              ): ( */}
+
+              {cart.length <= 0 &&
+                <div className="mt-2 flex flex-col items-center justify-center gap-2">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-8 h-8 inline-block align-middle text-yellow-400"
+                    >
+                      <circle cx="12" cy="12" r="10" fill="#FDE68A" stroke="#F59E42" strokeWidth="1.5" />
+                      <ellipse cx="9" cy="10" rx="1.2" ry="1.5" fill="#444" />
+                      <ellipse cx="15" cy="10" rx="1.2" ry="1.5" fill="#444" />
+                      <path d="M9 16c1-1 5-1 6 0" stroke="#444" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                    No products in cart
+                  </h3>
+                  <p className="text-gray-500 text-base mt-1">Your cart is feeling lonely! 🛒</p>
+                  <p className="text-gray-400 text-sm">Add some amazing products and make it happy.</p>
+                  <a
+                    href="/"
+                    className="mt-2 inline-block bg-indigo-600 text-white px-4 py-2 rounded-full shadow hover:bg-indigo-700 transition"
+                  >
+                    Go Shopping
+                  </a>
+                </div>
+              }
             </div>
 
             <div class="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
