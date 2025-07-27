@@ -7,10 +7,12 @@ import CartContext from '../contexts/CartContext';
 import { getDiscountedPrice } from '../contexts/CartContext';
 
 
-const ProductDetails = () => {
-
+const ProductDetails = ({ products: propProducts }) => {
+  const { products: contextProducts } = useContext(ProductContext);
   const { id } = useParams();
-  const { products } = useContext(ProductContext);
+  
+  // Use prop products if provided, otherwise use context products
+  const products = propProducts || contextProducts;
   const product = products.find((p) => String(p.id) === id);
 
   const { addToCart, removeFromCart, incrementQuantity, decrementQuantity, cart} = useContext(CartContext);
@@ -19,10 +21,18 @@ const ProductDetails = () => {
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || '');
   const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || '');
 
-  console.log(product);
+  console.log('Products:', products);
+  console.log('Product:', product);
 
   if (!product) {
-    return <div>Product not found</div>;
+    return (
+      <div className="max-w-7xl mx-auto p-6 text-center">
+        <div className="text-gray-500 text-lg">Product not found</div>
+        <Link to="/" className="text-blue-600 hover:underline mt-4 inline-block">
+          Back to Home
+        </Link>
+      </div>
+    );
   }
   
   // Use the utility for price/discount
@@ -34,7 +44,11 @@ const ProductDetails = () => {
       <div className="space-y-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-indigo-600 font-medium">
-          <Link to="/"> <HomeIcon /> </Link> / {product.category}
+          <Link to="/"> <HomeIcon /> </Link> / 
+          <Link to={`/category/${product.category}`} className="hover:underline">
+            {product.category}
+          </Link> / 
+          {product.title}
         </div>
 
         {/* Title & Wishlist */}
@@ -100,7 +114,7 @@ const ProductDetails = () => {
         <div>
           <h4 className="text-sm font-medium mb-2">Bag Color</h4>
           <div className="flex gap-3">
-            {product.colors.map((color, i) => (
+            {product.colors?.map((color, i) => (
               <button
                 key={i}
                 onClick={() => setSelectedColor(color)}
@@ -115,7 +129,7 @@ const ProductDetails = () => {
         <div>
           <h4 className="text-sm font-medium mb-2 mt-2">Bag Size</h4>
           <div className="flex gap-3">
-            {product.sizes.map((size, i) => (
+            {product.sizes?.map((size, i) => (
               <button
                 key={i}
                 onClick={() => setSelectedSize(size)}

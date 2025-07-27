@@ -1,11 +1,14 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import CartContext, { getDiscountedPrice } from "../contexts/CartContext";
-
+import usePagination from "../components/pagination/usePagination";
+import Pagination from "../components/pagination/Pagination";
 
 const CartDetails = () => {
   const { cart, incrementQuantity, decrementQuantity, removeFromCart, cartTotal, totalSaving, discountedPrice, totalDiscountedPrice} = useContext(CartContext);
 
+  // Use pagination for cart items (show 5 items per page on mobile, 10 on desktop)
+  const { currentPage, setCurrentPage, currentProducts: currentCartItems, totalItems, itemsPerPage } = usePagination(cart, 5);
 
   // Calculate store pickup charge: 10% of discounted price for each unique product (by ID)
   const uniqueProducts = Array.from(new Map(cart.map(p => [p.id, p])).values());
@@ -18,25 +21,43 @@ const CartDetails = () => {
   const tax = (parseFloat((cartTotal) * 0.15)).toFixed(2);
   const total = parseFloat (parseFloat(totalDiscountedPrice) + parseFloat(tax) + parseFloat(storePickupTotal)).toFixed(2);
 
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">🛒</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h2>
+          <p className="text-gray-600 mb-8">Add some products to get started!</p>
+          <Link 
+            to="/" 
+            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Continue Shopping
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
-        <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
-            Shopping Cart
+      <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+        <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
+            Shopping Cart ({cart.length} items)
           </h2>
           
-          <div class="mt-4 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-6" >
-            <div class="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
-            {cart.map((product) => ( 
-              <div class="space-y-6">
-                <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
-                  <div class="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
+          <div className="mt-4 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-6" >
+            <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
+            {currentCartItems.map((product) => ( 
+              <div key={product.id} className="space-y-6">
+                <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+                  <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
                   <Link to={`/product/${product.id}`}>
-                    <a href="#" class="shrink-0 md:order-1">
+                    <a href="#" className="shrink-0 md:order-1">
                     
                       <img
-                        class="h-20 w-20 dark:hidden"
+                        className="h-20 w-20 dark:hidden"
                         src={product.image}
                         alt="imac image"
                       />
@@ -47,20 +68,20 @@ const CartDetails = () => {
                       /> */}
                     </a>
                     </Link>
-                    <label for="counter-input" class="sr-only">
+                    <label htmlFor="counter-input" className="sr-only">
                       Choose quantity:
                     </label>
-                    <div class="flex items-center justify-between md:order-3 md:justify-end">
-                      <div class="flex items-center">
+                    <div className="flex items-center justify-between md:order-3 md:justify-end">
+                      <div className="flex items-center">
                         <button
                           type="button"
                           id="decrement-button"
                           data-input-counter-decrement="counter-input"
                           onClick={() => decrementQuantity(product)}
-                          class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
+                          className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
                         >
                           <svg
-                            class="h-2.5 w-2.5 text-gray-900 dark:text-white"
+                            className="h-2.5 w-2.5 text-gray-900 dark:text-white"
                             aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -68,9 +89,9 @@ const CartDetails = () => {
                           >
                             <path
                               stroke="currentColor"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
                               d="M1 1h16"
                             />
                           </svg>
@@ -79,7 +100,7 @@ const CartDetails = () => {
                           type="text"
                           id="counter-input"
                           data-input-counter
-                          class="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
+                          className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
                           placeholder=""
                           value={product.quantity}
                           required
@@ -89,10 +110,10 @@ const CartDetails = () => {
                           id="increment-button"
                           onClick={() => incrementQuantity(product)}
                           data-input-counter-increment="counter-input"
-                          class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
+                          className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
                         >
                           <svg
-                            class="h-2.5 w-2.5 text-gray-900 dark:text-white"
+                            className="h-2.5 w-2.5 text-gray-900 dark:text-white"
                             aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -100,140 +121,31 @@ const CartDetails = () => {
                           >
                             <path
                               stroke="currentColor"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
                               d="M9 1v16M1 9h16"
                             />
                           </svg>
-                        </button>
-                      </div>
-                      <div class="text-end md:order-4 md:w-32">
-                        <p class="text-base font-bold text-gray-900 dark:text-white">
-                          ${getDiscountedPrice(product.price).offerPrice}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div class="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
-                      
-                        <Link to={`/product/${product.id}`}>
-                          {product.title}
-                        </Link>
-
-                      <div class="flex items-center gap-4">
-                        <button
-                          type="button"
-                          class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 hover:underline dark:text-gray-400 dark:hover:text-white"
-                        >
-                          <svg
-                            class="me-1.5 h-5 w-5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke="currentColor"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
-                            />
-                          </svg>
-                          Add to Favorites
-                        </button>
-
-                        <button
-                          type="button"
-                          class="inline-flex items-center text-sm font-medium text-red-600 hover:underline dark:text-red-500"
-                          onClick={() => removeFromCart(product.id)}
-                        >
-                          <svg
-                            class="me-1.5 h-5 w-5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke="currentColor"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M6 18 17.94 6M18 18 6.06 6"
-                            />
-                          </svg>
-                          Remove
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-             
-              ))}
-          
-              {/* People also bought - always visible, horizontal scroll */}
-              {/* {cart.length > 0 ? (
-              <div className="mt-8">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                  People also bought
-                </h3>
-                <div className="w-full">
-                  <Product
-                    product={peopleAlsoBoughtProducts}
-                    containerClassName="
-                      flex flex-row gap-4 overflow-x-auto
-                      md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6
-                      hide-scrollbar
-                    "
-                    cardClassName="
-                      min-w-[70vw] max-w-xs sm:min-w-[260px] md:min-w-0
-                      flex-shrink-0
-                      bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-200
-                      border border-gray-200 p-4 flex flex-col items-center
-                    "
-                  />
-                </div>
-                <Pagination totalItems={products.length} itemsPerPage={itemsPerPage} currentPage={currentPage} onPageChange={setCurrentPage} />
-
-                
+            ))}
+            
+            {/* Cart Pagination */}
+            {cart.length > 5 && (
+              <div className="mt-6">
+                <Pagination 
+                  totalItems={totalItems} 
+                  itemsPerPage={itemsPerPage} 
+                  currentPage={currentPage} 
+                  onPageChange={setCurrentPage} 
+                />
               </div>
-              ): ( */}
-
-              {cart.length <= 0 &&
-                <div className="mt-2 flex flex-col items-center justify-center gap-2">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-8 h-8 inline-block align-middle text-yellow-400"
-                    >
-                      <circle cx="12" cy="12" r="10" fill="#FDE68A" stroke="#F59E42" strokeWidth="1.5" />
-                      <ellipse cx="9" cy="10" rx="1.2" ry="1.5" fill="#444" />
-                      <ellipse cx="15" cy="10" rx="1.2" ry="1.5" fill="#444" />
-                      <path d="M9 16c1-1 5-1 6 0" stroke="#444" strokeWidth="1.5" strokeLinecap="round" />
-                    </svg>
-                    No products in cart
-                  </h3>
-                  <p className="text-gray-500 text-base mt-1">Your cart is feeling lonely! 🛒</p>
-                  <p className="text-gray-400 text-sm">Add some amazing products and make it happy.</p>
-                  <a
-                    href="/"
-                    className="mt-2 inline-block bg-indigo-600 text-white px-4 py-2 rounded-full shadow hover:bg-indigo-700 transition"
-                  >
-                    Go Shopping
-                  </a>
-                </div>
-              }
+            )}
             </div>
 
             <div class="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
@@ -369,7 +281,6 @@ const CartDetails = () => {
           </div>
         </div>
       </section>
-
     </div>
   );
 };
