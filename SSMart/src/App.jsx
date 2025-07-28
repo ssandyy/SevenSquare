@@ -11,7 +11,16 @@ import {
 import { useContext } from "react";
 import { ProductContext } from "./contexts/ProductContext";
 import { AdminProvider } from "./contexts/AdminContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import { WishlistProvider } from "./contexts/WishlistContext";
 import CategoryPage from "./pages/CategoryPage";
+
+// Auth Components
+import Signup from "./components/auth/Signup";
+import Login from "./components/auth/Login";
+import Profile from "./components/auth/Profile";
+import Wishlist from "./components/Wishlist";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 // Admin Components
 import AdminLogin from "./components/admin/AdminLogin";
@@ -21,23 +30,40 @@ import Products from "./components/admin/Products";
 import Orders from "./components/admin/Orders";
 import Customers from "./components/admin/Customers";
 import StorageManager from "./components/admin/StorageManager";
-import ProtectedRoute from "./components/admin/ProtectedRoute";
+// import ProtectedRoute from "./components/admin/ProtectedRoute";
 
 function App() {
   const { products } = useContext(ProductContext);
 
   return (
-    <AdminProvider>
-      <Router>
-        {/* Frontend Routes */}
-        <Routes>
-          <Route element={<FrontendLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/marketing" element={<MarketingPromo />} />
-            <Route path="/product/:id" element={<ProductDetails />} />
-            <Route path="/category/:category" element={<CategoryPage />} />
-            <Route path="/cart" element={<CartDetails />} />
-          </Route>
+    <AuthProvider>
+      <WishlistProvider>
+        <AdminProvider>
+          <Router>
+            {/* Frontend Routes */}
+            <Routes>
+              <Route element={<FrontendLayout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/marketing" element={<MarketingPromo />} />
+                <Route path="/product/:id" element={<ProductDetails />} />
+                <Route path="/category/:category" element={<CategoryPage />} />
+                <Route path="/cart" element={<CartDetails />} />
+                <Route path="/wishlist" element={
+                  <ProtectedRoute>
+                    <Wishlist />
+                  </ProtectedRoute>
+                } />
+              
+
+              {/* Auth Routes */}
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              </Route>
 
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -62,7 +88,9 @@ function App() {
           </Route>
         </Routes>
       </Router>
-    </AdminProvider>
+        </AdminProvider>
+      </WishlistProvider>
+    </AuthProvider>
   );
 }
 

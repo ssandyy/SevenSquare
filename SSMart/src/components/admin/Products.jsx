@@ -18,7 +18,7 @@ import {
 import { productsService } from '../../services/adminService';
 import { useContext } from 'react';
 import { ProductContext } from '../../contexts/ProductContext';
-import { saveProductImage, getProductImage } from '../../utils/imageStorage';
+import { saveProductImage, getProductImage, deleteProductImage } from '../../utils/imageStorage';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -62,9 +62,12 @@ const Products = () => {
   const handleImageUpload = async (file) => {
     try {
       setImageUploading(true);
-      const imageUrl = await saveProductImage(editingProduct?.id || 'temp', file);
-      setImagePreview(imageUrl);
+      
+      // Create a preview URL for immediate display
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
       setSelectedImage(file);
+      
     } catch (error) {
       alert(error.message);
     } finally {
@@ -78,14 +81,21 @@ const Products = () => {
       const productData = { ...formData };
       
       if (editingProduct) {
+        // If editing and new image is selected, upload it first
+        if (selectedImage) {
+          const imageUrl = await saveProductImage(editingProduct.id, selectedImage);
+          productData.image = imageUrl;
+        }
         await productsService.updateProduct(editingProduct.id, productData);
         setEditingProduct(null);
-      } else {
-        const newProduct = await productsService.addProduct(productData);
+              } else {
+          const newProduct = await productsService.addProduct(productData);
         
         // Save image if uploaded
         if (selectedImage) {
-          await saveProductImage(newProduct.id, selectedImage);
+          const imageUrl = await saveProductImage(newProduct.id, selectedImage);
+          // Update product with image URL
+          await productsService.updateProduct(newProduct.id, { ...productData, image: imageUrl });
         }
       }
       
@@ -101,10 +111,17 @@ const Products = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
+        // Get the product to find its image filename
+        const product = products.find(p => p.id === id);
+        if (product && product.image) {
+          // Extract filename from image URL
+          const filename = product.image.split('/').pop();
+          if (filename && filename.startsWith('opt-')) {
+            await deleteProductImage(filename);
+          }
+        }
+        
         await productsService.deleteProduct(id);
-        // Also delete image from localStorage
-        const { ImageStorage } = await import('../../utils/imageStorage');
-        ImageStorage.deleteImage(id);
         fetchProducts(); // Refresh admin list
         refreshProducts(); // Refresh frontend products
       } catch (error) {
@@ -122,6 +139,12 @@ const Products = () => {
       description: '',
       status: 'active'
     });
+    
+    // Clean up preview URL to prevent memory leaks
+    if (imagePreview && imagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    
     setSelectedImage(null);
     setImagePreview(null);
   };
@@ -380,6 +403,10 @@ const Products = () => {
                       <button
                         type="button"
                         onClick={() => {
+                          // Clean up blob URL to prevent memory leaks
+                          if (imagePreview && imagePreview.startsWith('blob:')) {
+                            URL.revokeObjectURL(imagePreview);
+                          }
                           setImagePreview(null);
                           setSelectedImage(null);
                         }}

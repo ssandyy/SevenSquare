@@ -15,7 +15,7 @@ import {
   Loader2,
   Plus
 } from 'lucide-react';
-import { customersService } from '../../services/adminService';
+import adminService from '../../services/adminService';
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
@@ -39,7 +39,7 @@ const Customers = () => {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const data = await customersService.getAllCustomers();
+      const data = await adminService.getAllCustomers();
       setCustomers(data);
     } catch (error) {
       console.error('Error fetching customers:', error);
@@ -52,10 +52,10 @@ const Customers = () => {
     e.preventDefault();
     try {
       if (editingCustomer) {
-        await customersService.updateCustomer(editingCustomer.id, formData);
+        await adminService.updateCustomer(editingCustomer.id, formData);
         setEditingCustomer(null);
       } else {
-        await customersService.addCustomer(formData);
+        await adminService.createCustomer(formData);
       }
       setShowAddModal(false);
       resetForm();
@@ -68,7 +68,7 @@ const Customers = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this customer?')) {
       try {
-        await customersService.deleteCustomer(id);
+        await adminService.deleteCustomer(id);
         fetchCustomers(); // Refresh the list
       } catch (error) {
         console.error('Error deleting customer:', error);

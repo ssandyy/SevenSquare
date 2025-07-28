@@ -3,7 +3,8 @@ import Button from "./parts/Button";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../contexts/CartContext";
 import { getDiscountedPrice } from '../contexts/CartContext';
-import { Heart, Eye, ShoppingCart, Star, Truck, Shield } from "lucide-react";
+import { Eye, ShoppingCart, Star, Truck, Shield } from "lucide-react";
+import WishlistButton from "./WishlistButton";
 
 const Product = ({ product, cardClassName = "", containerClassName = "" }) => {  
   const [search, setSearch] = useState("");
@@ -36,23 +37,26 @@ const Product = ({ product, cardClassName = "", containerClassName = "" }) => {
               
               {/* Discount Badge */}
               {discountPercent > 0 && (
-                <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
                   -{discountPercent}%
                 </div>
               )}
               
               {/* Category Badge */}
-              <div className="absolute top-3 right-3 bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">
+              <div className="absolute top-3 left-3 bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full z-10">
                   {productz.category}
               </div>
               
               {/* Quick Action Buttons */}
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col gap-2">
-                <button className="w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors">
-                  <Heart className="w-4 h-4 text-gray-600" />
-                </button>
+              <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
+                <WishlistButton 
+                  productId={productz.id} 
+                  productData={productz}
+                  className="w-8 h-8 rounded-full shadow-md flex items-center justify-center transition-colors"
+                  showWhenInWishlist={true}
+                />
                 <button 
-                  className="w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
+                  className="w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   onClick={() => navigate(`/product/${productz.id}`)}
                 >
                   <Eye className="w-4 h-4 text-gray-600" />

@@ -28,10 +28,10 @@ const AdminLayout = () => {
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Products', href: '/admin/products', icon: Package },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
-    { name: 'Customers', href: '/admin/customers', icon: Users },
-    { name: 'Storage', href: '/admin/storage', icon: HardDrive },
-    { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
+    // { name: 'Customers', href: '/admin/customers', icon: Users },
+    // { name: 'Storage', href: '/admin/storage', icon: HardDrive },
+    // { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
+    // { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 
   const handleLogout = () => {

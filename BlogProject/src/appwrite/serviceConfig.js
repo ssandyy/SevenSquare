@@ -126,7 +126,7 @@ export class Service{
                 ID.unique(),
                 file,
                 [
-                    Permission.read(Role.any())  // 👈 This line makes the file publicly accessible
+                    Permission.read(Role.any())
                 ]
             );
         } catch (error) {

@@ -181,11 +181,16 @@ export const getProductImage = (productId, fallbackUrl = null) => {
   if (storedImage) {
     return storedImage.data;
   }
-  return fallbackUrl || 'https://via.placeholder.com/300x300/4F46E5/FFFFFF?text=No+Image';
+  return fallbackUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM5Q0EzQUYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD4KPC9zdmc+';
 };
 
 // Helper function to save product image
 export const saveProductImage = async (productId, file) => {
   ImageStorage.validateFile(file);
   return await ImageStorage.saveImage(productId, file);
-}; 
+};
+
+// Helper function to delete product image
+export const deleteProductImage = async (filename) => {
+  return await ImageStorage.deleteImage(filename);
+};

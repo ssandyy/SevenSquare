@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Star, Heart, Home, HomeIcon } from 'lucide-react';
+import { Star, Home, HomeIcon } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { useContext } from 'react';
 import { ProductContext } from '../contexts/ProductContext';
 import CartContext from '../contexts/CartContext';
 import { getDiscountedPrice } from '../contexts/CartContext';
+import WishlistButton from '../components/WishlistButton';
 
 
 const ProductDetails = ({ products: propProducts }) => {
@@ -56,9 +57,11 @@ const ProductDetails = ({ products: propProducts }) => {
           <h1 className="text-2xl font-semibold leading-tight">
           {product.title}
           </h1>
-          <button className="p-2 rounded-full bg-indigo-50 hover:bg-indigo-100">
-            <Heart className="text-indigo-500" size={20} />
-          </button>
+          <WishlistButton 
+            productId={product.id} 
+            productData={product}
+            className="p-2 rounded-full bg-indigo-50 hover:bg-indigo-100"
+          />
         </div>
 
         {/* Description */}

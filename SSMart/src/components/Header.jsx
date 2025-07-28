@@ -1,19 +1,29 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { SidebarContext } from "../contexts/SidebarContext";
 import { Link } from "react-router-dom";
-import { Badge, ShoppingBag, Search, User, Heart, Menu, X } from "lucide-react";
+import { Badge, ShoppingBag, Search, User, Heart, Menu, X, LogOut } from "lucide-react";
 import CartContext from "../contexts/CartContext";
 import { ProductContext } from "../contexts/ProductContext";
+import { useAuth } from "../contexts/AuthContext";
+import { useWishlist } from "../contexts/WishlistContext";
 
 const Header = () => {
   const { toggleSidebar } = useContext(SidebarContext);
   const { cartQty } = useContext(CartContext);
   const { products } = useContext(ProductContext);
+  const { currentUser, signOut } = useAuth();
+  const { wishlistCount } = useWishlist();
+  
+  // Debug: Log wishlist count
+  console.log('Header wishlist count:', wishlistCount);
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const searchRef = useRef(null);
+  const userMenuRef = useRef(null);
 
   // Get unique categories from products
   const categories = [...new Set(products.map((product) => product.category))]
@@ -23,11 +33,14 @@ const Header = () => {
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  // Handle click outside search dropdown
+  // Handle click outside search dropdown and user menu
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowSearchResults(false);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
       }
     };
 
@@ -156,21 +169,72 @@ const Header = () => {
             {/* Wishlist */}
             <Link
               to="/wishlist"
-              className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="relative p-2 hover:bg-gray-100 rounded-full transition-colors group"
             >
-              <Heart className="w-6 h-6 text-gray-600" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
-                3
-              </span>
+              <Heart className="w-6 h-6 text-gray-600 group-hover:text-red-500 transition-colors" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full min-w-[20px] h-5 flex items-center justify-center text-xs font-medium animate-pulse">
+                  {wishlistCount > 99 ? '99+' : wishlistCount}
+                </span>
+              )}
             </Link>
 
             {/* User Account */}
-            <Link
-              to="/account"
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <User className="w-6 h-6 text-gray-600" />
-            </Link>
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <User className="w-6 h-6 text-gray-600" />
+              </button>
+              
+              {showUserMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                  {currentUser ? (
+                    <>
+                      <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
+                        <p className="font-medium">{currentUser.displayName || currentUser.email}</p>
+                        <p className="text-gray-500 text-xs">{currentUser.role}</p>
+                      </div>
+                      <Link
+                        to="/profile"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        Profile
+                      </Link>
+                      <button
+                        onClick={() => {
+                          signOut();
+                          setShowUserMenu(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <LogOut className="inline w-4 h-4 mr-2" />
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/login"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        to="/signup"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        Sign Up
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Cart */}
             <Link

@@ -13,7 +13,7 @@ import {
   MapPin,
   Loader2
 } from 'lucide-react';
-import { ordersService } from '../../services/adminService';
+import adminService from '../../services/adminService.js';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -28,7 +28,7 @@ const Orders = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const data = await ordersService.getAllOrders();
+      const data = await adminService.getAllOrders();
       setOrders(data);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -39,7 +39,7 @@ const Orders = () => {
 
   const handleStatusUpdate = async (orderId, newStatus) => {
     try {
-      await ordersService.updateOrderStatus(orderId, newStatus);
+              await adminService.updateOrderStatus(orderId, newStatus);
       fetchOrders(); // Refresh the list
     } catch (error) {
       console.error('Error updating order status:', error);
@@ -49,7 +49,7 @@ const Orders = () => {
   const handleDelete = async (orderId) => {
     if (window.confirm('Are you sure you want to delete this order?')) {
       try {
-        await ordersService.deleteOrder(orderId);
+        await adminService.deleteOrder(orderId);
         fetchOrders(); // Refresh the list
       } catch (error) {
         console.error('Error deleting order:', error);

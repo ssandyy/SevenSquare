@@ -2,6 +2,14 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 export const CartContext = createContext();
 
+// Add the useCart hook
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
+};
 
 export function getDiscountedPrice(originalPrice) {
   const min = 10, max = 40;

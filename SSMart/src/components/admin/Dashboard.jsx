@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Package, 
-  ShoppingCart, 
-  Users, 
-  DollarSign, 
-  Plus,
+import {
+  Package,
+  ShoppingCart,
+  Users,
+  DollarSign,
   TrendingUp,
-  Settings,
+  Plus,
   BarChart3,
+  Settings,
   Loader2,
   Database
 } from 'lucide-react';
@@ -192,7 +192,7 @@ const Dashboard = () => {
         />
         <StatCard
           title="Total Revenue"
-          value={`$${stats.totalRevenue.toLocaleString()}`}
+          value={`$${(stats.totalRevenue || 0).toLocaleString()}`}
           icon={DollarSign}
         />
       </div>
@@ -237,7 +237,7 @@ const Dashboard = () => {
             colorScheme="indigo"
           />
           <QuickAction
-            title="Settings"
+            title="Settingsz"
             description="Configure your store settings"
             icon={Settings}
             href="/admin/settings"
@@ -261,9 +261,9 @@ const Dashboard = () => {
                     activity.status === 'shipped' ? 'bg-blue-400' :
                     activity.status === 'pending' ? 'bg-yellow-400' : 'bg-gray-400'
                   }`}></div>
-                  <span className="text-sm text-gray-600">{activity.message}</span>
+                  <span className="text-sm text-gray-600">{activity.title}</span>
                   <span className="ml-auto text-xs text-gray-400">
-                    {activity.timestamp ? new Date(activity.timestamp.toDate()).toLocaleString() : 'Recently'}
+                    {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : 'Recently'}
                   </span>
                 </div>
               ))}
@@ -279,4 +279,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;
