@@ -13,7 +13,7 @@ import {
   MapPin,
   Loader2
 } from 'lucide-react';
-import adminService from '../../services/adminService.js';
+import adminService from '../../services/adminService';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -142,7 +142,7 @@ const Orders = () => {
         <div>
           <div className="flex items-center space-x-2 mb-2">
             <DollarSign className="w-4 h-4 text-gray-400" />
-            <span className="text-lg font-semibold text-gray-900">${order.total}</span>
+            <span className="text-lg font-semibold text-gray-900">₹{order.total}</span>
           </div>
           <p className="text-sm text-gray-500">{order.items?.length || 0} items</p>
         </div>
@@ -161,7 +161,7 @@ const Orders = () => {
           {order.items?.map((item, index) => (
             <div key={index} className="flex items-center justify-between text-sm">
               <span className="text-gray-700">{item.name} x{item.quantity}</span>
-              <span className="text-gray-900">${item.price * item.quantity}</span>
+              <span className="text-gray-900">₹{item.price * item.quantity}</span>
             </div>
           )) || (
             <p className="text-sm text-gray-500">No items found</p>
@@ -250,7 +250,7 @@ const Orders = () => {
         />
         <StatCard
           title="Total Revenue"
-          value={`$${stats.totalRevenue.toLocaleString()}`}
+          value={`₹${stats.totalRevenue.toLocaleString()}`}
           icon={DollarSign}
           color="green"
         />

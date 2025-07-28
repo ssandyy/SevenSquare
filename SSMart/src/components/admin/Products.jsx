@@ -243,7 +243,7 @@ const Products = () => {
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
             <p className="text-sm text-gray-500">Price</p>
-            <p className="text-lg font-semibold text-gray-900">${product.price}</p>
+            <p className="text-lg font-semibold text-gray-900">₹{product.price}</p>
           </div>
           <div>
             <p className="text-sm text-gray-500">Stock</p>
@@ -322,7 +322,7 @@ const Products = () => {
         />
         <StatCard
           title="Total Value"
-          value={`$${stats.totalValue.toLocaleString()}`}
+          value={`₹${stats.totalValue.toLocaleString()}`}
           icon={DollarSign}
           color="purple"
         />

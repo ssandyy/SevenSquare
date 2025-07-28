@@ -78,7 +78,7 @@ const Sidebar = () => {
               {cart.length > 0 && (
                 <div className="flex items-center justify-between gap-2 py-2">
                   <span>
-                    Total: $
+                    Total: ₹
                     {totalDiscountedPrice}
                   </span>
                 </div>

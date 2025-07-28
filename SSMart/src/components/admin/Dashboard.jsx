@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import {
-  Package,
-  ShoppingCart,
-  Users,
-  DollarSign,
-  TrendingUp,
-  Plus,
   BarChart3,
-  Settings,
+  Database,
   Loader2,
-  Database
+  Package,
+  Plus,
+  Settings,
+  ShoppingCart,
+  TrendingUp,
+  Users
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { analyticsService, initializeSampleData } from '../../services/adminService';
 
 const Dashboard = () => {
@@ -190,11 +189,12 @@ const Dashboard = () => {
           value={stats.totalCustomers}
           icon={Users}
         />
-        <StatCard
-          title="Total Revenue"
-          value={`$${(stats.totalRevenue || 0).toLocaleString()}`}
-          icon={DollarSign}
-        />
+        {/* <StatCard
+          title="Total Value"
+          value={`₹${stats.totalValue.toLocaleString()}`}
+          // icon={DollarSign}
+          color="purple"
+        /> */}
       </div>
 
       {/* Quick Actions */}

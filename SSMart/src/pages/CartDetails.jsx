@@ -1,9 +1,9 @@
+import { Trash2 } from "lucide-react";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import CartContext, { getDiscountedPrice } from "../contexts/CartContext";
-import usePagination from "../components/pagination/usePagination";
 import Pagination from "../components/pagination/Pagination";
-import { Trash2 } from "lucide-react";
+import usePagination from "../components/pagination/usePagination";
+import CartContext, { getDiscountedPrice } from "../contexts/CartContext";
 
 const CartDetails = () => {
   const { cart, incrementQuantity, decrementQuantity, removeFromCart, cartTotal, totalSaving, discountedPrice, totalDiscountedPrice} = useContext(CartContext);
@@ -79,11 +79,11 @@ const CartDetails = () => {
                         </p>
                         <div className="flex items-center space-x-4 mt-2">
                           <span className="text-lg font-bold text-gray-900 dark:text-white">
-                            ${getDiscountedPrice(product.price).offerPrice}
+                            ₹{getDiscountedPrice(product.price).offerPrice}
                           </span>
                           {product.price !== getDiscountedPrice(product.price).offerPrice && (
                             <span className="text-sm text-gray-500 line-through">
-                              ${product.price}
+                              ₹{product.price}
                             </span>
                           )}
                         </div>
@@ -218,7 +218,7 @@ const CartDetails = () => {
                         Original price
                       </dt>
                       <dd className="text-base font-medium text-gray-900 dark:text-white">
-                      ${cartTotal}
+                        ₹{cartTotal}
                       </dd>
                     </dl>
                     <dl className="flex items-center justify-between gap-4">
@@ -226,7 +226,7 @@ const CartDetails = () => {
                         Discounted price
                       </dt>
                       <dd className="text-base font-medium text-gray-900 dark:text-white">
-                        ${discountedPrice}
+                        ₹{discountedPrice}
                       </dd>
                     </dl>
 
@@ -235,7 +235,7 @@ const CartDetails = () => {
                         Savings
                       </dt>
                       <dd className="text-base font-medium text-green-600">
-                        -$ {totalSaving}
+                        -₹ {totalSaving}
                       </dd>
                     </dl>
 
@@ -244,7 +244,7 @@ const CartDetails = () => {
                         Store Pickup
                       </dt>
                       <dd className="text-base font-medium text-gray-900 dark:text-white">
-                        ${storePickupTotal}
+                        ₹{storePickupTotal}
                       </dd>
                     </dl>
 
@@ -253,7 +253,7 @@ const CartDetails = () => {
                         Tax
                       </dt>
                       <dd className="text-base font-medium text-gray-900 dark:text-white">
-                        ${tax}
+                        ₹{tax}
                       </dd>
                     </dl>
                   </div>
@@ -263,7 +263,7 @@ const CartDetails = () => {
                       Total
                     </dt>
                     <dd className="text-base font-bold text-gray-900 dark:text-white">
-                      ${total}
+                      ₹{total}
                     </dd>
                   </dl>
                 </div>
@@ -303,8 +303,6 @@ const CartDetails = () => {
                   </Link>
                 </div>
               </div>
-
-              
             </div>
           </div>
         </div>

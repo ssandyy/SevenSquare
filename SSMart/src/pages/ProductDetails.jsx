@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
-import { Star, Home, HomeIcon } from 'lucide-react';
+import { HomeIcon, Star } from 'lucide-react';
+import { useContext, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useContext } from 'react';
-import { ProductContext } from '../contexts/ProductContext';
-import CartContext from '../contexts/CartContext';
-import { getDiscountedPrice } from '../contexts/CartContext';
 import WishlistButton from '../components/WishlistButton';
+import CartContext, { getDiscountedPrice } from '../contexts/CartContext';
+import { ProductContext } from '../contexts/ProductContext';
 
 
 const ProductDetails = ({ products: propProducts }) => {
@@ -71,8 +69,8 @@ const ProductDetails = ({ products: propProducts }) => {
 
         {/* Price & Discount */}
         <div className="flex items-center gap-4 text-lg font-semibold">
-          <span className="text-black">${offerPrice}</span>
-          <span className="line-through text-gray-400 text-base">${originalPrice}</span>
+          <span className="text-black">₹{offerPrice}</span>
+          <span className="line-through text-gray-400 text-base">₹{originalPrice}</span>
           <span className="text-indigo-600 text-sm">{discountPercent}% off</span>
         </div>
 

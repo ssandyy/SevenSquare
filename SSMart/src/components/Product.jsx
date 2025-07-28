@@ -3,7 +3,7 @@ import Button from "./parts/Button";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../contexts/CartContext";
 import { getDiscountedPrice } from '../contexts/CartContext';
-import { Eye, ShoppingCart, Star, Truck, Shield } from "lucide-react";
+import { Eye, ShoppingCart, Star, Truck, Shield, Trash } from "lucide-react";
 import WishlistButton from "./WishlistButton";
 
 const Product = ({ product, cardClassName = "", containerClassName = "" }) => {  
@@ -97,15 +97,15 @@ const Product = ({ product, cardClassName = "", containerClassName = "" }) => {
               {/* Price */}
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-lg font-bold text-gray-900">
-                    ${offerPrice}
+                    ₹{offerPrice}
                 </span>
                 {discountPercent > 0 && (
                   <>
                     <span className="text-sm text-gray-500 line-through">
-                      ${originalPrice}
+                      ₹{originalPrice}
                     </span>
                     <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
-                      Save ${(originalPrice - offerPrice).toFixed(2)}
+                      Save ₹{(originalPrice - offerPrice).toFixed(2)}
                     </span>
                   </>
                 )}
@@ -124,7 +124,7 @@ const Product = ({ product, cardClassName = "", containerClassName = "" }) => {
               </div>
 
               {/* Add to Cart Button */}
-              <div className="space-y-2">
+              <div>
                   {!inCart ? (
                     <button
                     className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
@@ -134,15 +134,15 @@ const Product = ({ product, cardClassName = "", containerClassName = "" }) => {
                     Add to Cart
                     </button>
                   ) : (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center gap-2">
+                  <div className="flex items-center justify-center gap-2 w-full">
+                    <div style={{ flex: '1 1 50%' }} className="flex items-center justify-center">
                       <button
                         className="w-8 h-8 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors flex items-center justify-center"
                         onClick={() => decrementQuantity(productz)}
                       >
                         -
                       </button>
-                      <span className="font-semibold text-lg w-12 text-center">
+                      <span className="font-semibold text-lg text-center mx-2" style={{ minWidth: '48px' }}>
                         {cartItem.quantity}
                       </span>
                       <button
@@ -152,12 +152,20 @@ const Product = ({ product, cardClassName = "", containerClassName = "" }) => {
                         +
                       </button>
                     </div>
+                    <div style={{ flex: '1 1 50%' }} className="flex items-center justify-center">
                       <button
-                      className="w-full bg-red-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-red-700 transition-colors text-sm"
                         onClick={() => removeFromCart(productz.id)}
+                        title="Remove from Cart"
+                        className="flex items-center justify-center transition-colors focus:outline-none w-8 h-8 rounded-full text-white bg-red-500 hover:bg-red-600 sm:w-auto sm:h-auto sm:rounded-lg sm:px-4 sm:py-2 sm:bg-transparent sm:text-red-600 sm:hover:bg-red-100"
                       >
-                      Remove from Cart
+                        <span className="inline sm:hidden">
+                          <Trash className="w-5 h-5" />
+                        </span>
+                        <span className="hidden sm:inline font-medium">
+                          Remove
+                        </span>
                       </button>
+                    </div>
                   </div>
                   )}
               </div>

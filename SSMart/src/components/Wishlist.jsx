@@ -163,9 +163,7 @@ const Wishlist = memo(() => {
                 </p>
 
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xl font-bold text-gray-900">
-                    ${item.productData?.price || 0}
-                  </span>
+                  <span className="text-xs font-semibold ml-2">₹{item.productData?.price || 0}</span>
                   <span className="text-sm text-gray-500">
                     Added {new Date(item.addedAt).toLocaleDateString()}
                   </span>

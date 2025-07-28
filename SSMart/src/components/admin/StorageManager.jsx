@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Database, 
   Trash2, 
-  Download, 
+  Download,
   HardDrive, 
   Image as ImageIcon,
   AlertTriangle,

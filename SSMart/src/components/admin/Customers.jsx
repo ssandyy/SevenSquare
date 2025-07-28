@@ -202,7 +202,7 @@ const Customers = () => {
         <div className="text-center">
           <div className="flex items-center justify-center space-x-1 mb-1">
             <DollarSign className="w-4 h-4 text-green-500" />
-            <span className="text-lg font-semibold text-gray-900">${customer.totalSpent || 0}</span>
+            <span className="text-lg font-semibold text-gray-900">₹{customer.totalSpent || 0}</span>
           </div>
           <p className="text-xs text-gray-500">Total Spent</p>
         </div>
@@ -210,7 +210,7 @@ const Customers = () => {
           <div className="flex items-center justify-center space-x-1 mb-1">
             <Star className="w-4 h-4 text-yellow-500" />
             <span className="text-lg font-semibold text-gray-900">
-              ${customer.totalOrders > 0 ? Math.round((customer.totalSpent || 0) / customer.totalOrders) : 0}
+              ₹{customer.totalOrders > 0 ? Math.round((customer.totalSpent || 0) / customer.totalOrders) : 0}
             </span>
           </div>
           <p className="text-xs text-gray-500">Avg Order</p>
@@ -273,13 +273,13 @@ const Customers = () => {
         />
         <StatCard
           title="Total Revenue"
-          value={`$${stats.totalRevenue.toLocaleString()}`}
+          value={`₹${stats.totalRevenue.toLocaleString()}`}
           icon={DollarSign}
           color="purple"
         />
         <StatCard
           title="Avg Order Value"
-          value={`$${Math.round(stats.avgOrderValue)}`}
+          value={`₹${Math.round(stats.avgOrderValue)}`}
           icon={ShoppingBag}
           color="orange"
         />

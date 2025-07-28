@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAdmin } from '../../contexts/AdminContext';
 import { 
-  LayoutDashboard, 
-  Package, 
-  Users, 
+  LayoutDashboard,
+  Package,
+  Users,
   ShoppingCart, 
   BarChart3, 
   Settings, 
