@@ -7,6 +7,30 @@ const CartItem = ({ item }) => {
   const { id, image, title, quantity, price } = item;
   const { removeFromCart, incrementQuantity, decrementQuantity } = useContext(CartContext);
 
+  const handleIncrement = async () => {
+    try {
+      await incrementQuantity(id);
+    } catch (error) {
+      console.error('Error incrementing quantity:', error);
+    }
+  };
+
+  const handleDecrement = async () => {
+    try {
+      await decrementQuantity(id);
+    } catch (error) {
+      console.error('Error decrementing quantity:', error);
+    }
+  };
+
+  const handleRemove = async () => {
+    try {
+      await removeFromCart(id);
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+    }
+  };
+
   // Calculate discounted price for this item
   const offerPrice = parseFloat(getDiscountedPrice(price).offerPrice);
   const itemTotal = (offerPrice * quantity).toFixed(2);
@@ -25,7 +49,7 @@ const CartItem = ({ item }) => {
         <span className="text-sm font-medium truncate max-w-[140px]">{title}</span>
         <div className="flex items-center gap-2 mt-1">
           <button
-            onClick={() => decrementQuantity(item)}
+            onClick={handleDecrement}
             className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 disabled:opacity-50"
             disabled={quantity <= 1}
             aria-label="Decrease quantity"
@@ -34,7 +58,7 @@ const CartItem = ({ item }) => {
           </button>
           <span className="text-xs font-semibold">{quantity}</span>
           <button
-            onClick={() => incrementQuantity(item)}
+            onClick={handleIncrement}
             className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600"
             aria-label="Increase quantity"
           >
@@ -46,7 +70,7 @@ const CartItem = ({ item }) => {
       </div>
       {/* Delete */}
       <button
-        onClick={() => removeFromCart(id)}
+        onClick={handleRemove}
         className="text-gray-400 hover:text-red-500 ml-2"
         title="Remove from cart"
       >

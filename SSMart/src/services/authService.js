@@ -127,6 +127,28 @@ export class AuthService {
       throw error;
     }
   }
+
+  // Promote user to admin (only existing admins can do this)
+  static async promoteToAdmin(uid) {
+    try {
+      await setDoc(doc(db, 'users', uid), { role: 'admin' }, { merge: true });
+      return { success: true };
+    } catch (error) {
+      console.error('Error promoting user to admin:', error);
+      throw error;
+    }
+  }
+
+  // Demote admin to user (only existing admins can do this)
+  static async demoteToUser(uid) {
+    try {
+      await setDoc(doc(db, 'users', uid), { role: 'user' }, { merge: true });
+      return { success: true };
+    } catch (error) {
+      console.error('Error demoting admin to user:', error);
+      throw error;
+    }
+  }
 }
 
 export default AuthService; 

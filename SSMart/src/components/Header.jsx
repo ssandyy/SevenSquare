@@ -1,10 +1,10 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
-import { SidebarContext } from "../contexts/SidebarContext";
+import { Heart, LogOut, Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Badge, ShoppingBag, Search, User, Heart, Menu, X, LogOut } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
 import CartContext from "../contexts/CartContext";
 import { ProductContext } from "../contexts/ProductContext";
-import { useAuth } from "../contexts/AuthContext";
+import { SidebarContext } from "../contexts/SidebarContext";
 import { useWishlist } from "../contexts/WishlistContext";
 
 const Header = () => {
@@ -12,10 +12,20 @@ const Header = () => {
   const { cartQty } = useContext(CartContext);
   const { products } = useContext(ProductContext);
   const { currentUser, signOut } = useAuth();
-  const { wishlistCount } = useWishlist();
+  const { wishlistCount, refreshWishlist } = useWishlist();
   
   // Debug: Log wishlist count
-  console.log('Header wishlist count:', wishlistCount);
+  console.log('Header wishlist count:', wishlistCount, 'currentUser:', currentUser?.uid || 'null');
+
+  // Refresh wishlist when user changes
+  useEffect(() => {
+    console.log('Header: currentUser changed:', currentUser?.uid || 'null');
+    if (currentUser) {
+      refreshWishlist();
+    }
+  }, [currentUser?.uid, refreshWishlist]); // Use currentUser.uid instead of currentUser
+
+
   
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -85,7 +95,7 @@ const Header = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center text-sm">
             <div className="flex items-center space-x-4">
-              <span>📞 +1 (555) 123-4567</span>
+              <span>📞 +91 6262232398</span>
               <span>📧 support@ssmart.com</span>
             </div>
             <div className="flex items-center space-x-4">
@@ -172,12 +182,14 @@ const Header = () => {
               className="relative p-2 hover:bg-gray-100 rounded-full transition-colors group"
             >
               <Heart className="w-6 h-6 text-gray-600 group-hover:text-red-500 transition-colors" />
-              {wishlistCount > 0 && (
+              {currentUser && wishlistCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full min-w-[20px] h-5 flex items-center justify-center text-xs font-medium animate-pulse">
                   {wishlistCount > 99 ? '99+' : wishlistCount}
                 </span>
               )}
             </Link>
+
+
 
             {/* User Account */}
             <div className="relative" ref={userMenuRef}>
@@ -185,7 +197,13 @@ const Header = () => {
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <User className="w-6 h-6 text-gray-600" />
+                
+                {currentUser ? (
+                  // <User className="w-6 h-6 text-gray-600" />
+                  <span className="text-gray-500 text-xs">{currentUser.displayName || currentUser.email}</span>
+                ) : (
+                  <span className="text-gray-500 text-xs">Sign In</span>
+                )}
               </button>
               
               {showUserMenu && (
@@ -205,6 +223,7 @@ const Header = () => {
                       </Link>
                       <button
                         onClick={() => {
+                          console.log('Header: Signing out user');
                           signOut();
                           setShowUserMenu(false);
                         }}
@@ -242,7 +261,7 @@ const Header = () => {
               className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
               <ShoppingBag className="w-6 h-6 text-gray-600" />
-              {cartQty > 0 && (
+              {currentUser && cartQty > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium">
                   {cartQty}
               </span>

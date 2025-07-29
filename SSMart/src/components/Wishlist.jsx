@@ -6,11 +6,18 @@ import { Link } from 'react-router-dom';
 import { getProductImage } from '../utils/imageStorage';
 
 const Wishlist = memo(() => {
-  const { wishlist, removeFromWishlist, moveToCart, clearWishlist } = useWishlist();
+  const { wishlist, removeFromWishlist, moveToCart, clearWishlist, refreshWishlist } = useWishlist();
   const { currentUser } = useAuth();
   const [removingItem, setRemovingItem] = useState(null);
   const [movingToCart, setMovingToCart] = useState(null);
   const [clearingWishlist, setClearingWishlist] = useState(false);
+
+  // Refresh wishlist when component mounts
+  useEffect(() => {
+    if (currentUser) {
+      refreshWishlist();
+    }
+  }, [currentUser?.uid, refreshWishlist]); // Use currentUser.uid instead of currentUser
 
   const handleRemoveFromWishlist = useCallback(async (productId, e) => {
     e.preventDefault();

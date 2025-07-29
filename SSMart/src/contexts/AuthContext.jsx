@@ -61,6 +61,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const promoteToAdmin = async (uid) => {
+    try {
+      if (!isAdmin()) throw new Error('Only admins can promote users');
+      await AuthService.promoteToAdmin(uid);
+      return { success: true };
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const demoteToUser = async (uid) => {
+    try {
+      if (!isAdmin()) throw new Error('Only admins can demote users');
+      await AuthService.demoteToUser(uid);
+      return { success: true };
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const isAdmin = () => {
     return currentUser?.role === 'admin';
   };
@@ -75,6 +95,8 @@ export const AuthProvider = ({ children }) => {
     signIn,
     signOut,
     updateProfile,
+    promoteToAdmin,
+    demoteToUser,
     isAdmin,
     isUser,
     loading

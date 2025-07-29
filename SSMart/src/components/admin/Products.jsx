@@ -13,7 +13,9 @@ import {
   AlertCircle,
   Loader2,
   Upload,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Link as LinkIcon,
+  X
 } from 'lucide-react';
 import { productsService } from '../../services/adminService';
 import { useContext } from 'react';
@@ -36,11 +38,110 @@ const Products = () => {
     description: '',
     status: 'active'
   });
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  
+  // Multiple images state
+  const [productImages, setProductImages] = useState([]);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [imageUrlInput, setImageUrlInput] = useState('');
+  const [showUrlInput, setShowUrlInput] = useState(false);
 
   // Get refreshProducts from ProductContext
   const { refreshProducts } = useContext(ProductContext);
+
+  // Predefined categories with suggested images
+  const predefinedCategories = [
+    'Beauty Products',
+    'Fragrances', 
+    'Furniture',
+    'Groceries'
+  ];
+
+  // Category image suggestions
+  const categoryImageSuggestions = {
+    'Beauty Products': [
+      'https://dummyimage.com/300x200/000/fff&text=Mascara',
+      'https://dummyimage.com/300x200/ff0000/fff&text=Lipstick',
+      'https://dummyimage.com/300x200/800080/fff&text=Eyeshadow'
+    ],
+    'Fragrances': [
+      'https://dummyimage.com/300x200/ff69b4/fff&text=Perfume+1',
+      'https://dummyimage.com/300x200/9370db/fff&text=Perfume+2'
+    ],
+    'Furniture': [
+      'https://dummyimage.com/300x200/8b4513/fff&text=Bed',
+      'https://dummyimage.com/300x200/a0522d/fff&text=Sofa'
+    ],
+    'Groceries': [
+      'https://dummyimage.com/300x200/ff0000/fff&text=Apple',
+      'https://dummyimage.com/300x200/ffff00/000&text=Banana'
+    ]
+  };
+
+  // Sample product data for each category
+  const sampleProducts = {
+    'Beauty Products': [
+      {
+        name: 'Volumizing Mascara',
+        price: '29.99',
+        stock: '100',
+        description: 'Long-lasting volumizing mascara for dramatic lashes'
+      },
+      {
+        name: 'Matte Lipstick',
+        price: '19.99',
+        stock: '75',
+        description: 'Rich, matte finish lipstick in vibrant red'
+      },
+      {
+        name: 'Eyeshadow Palette',
+        price: '39.99',
+        stock: '50',
+        description: 'Professional eyeshadow palette with 12 shades'
+      }
+    ],
+    'Fragrances': [
+      {
+        name: 'Floral Perfume',
+        price: '89.99',
+        stock: '30',
+        description: 'Elegant floral fragrance with long-lasting scent'
+      },
+      {
+        name: 'Luxury Perfume',
+        price: '129.99',
+        stock: '25',
+        description: 'Premium luxury perfume with exotic notes'
+      }
+    ],
+    'Furniture': [
+      {
+        name: 'Queen Size Bed',
+        price: '599.99',
+        stock: '10',
+        description: 'Comfortable queen size bed with wooden frame'
+      },
+      {
+        name: 'Leather Sofa',
+        price: '899.99',
+        stock: '8',
+        description: 'Premium leather sofa for living room'
+      }
+    ],
+    'Groceries': [
+      {
+        name: 'Fresh Red Apples',
+        price: '4.99',
+        stock: '200',
+        description: 'Sweet and crisp red apples, perfect for snacking'
+      },
+      {
+        name: 'Organic Bananas',
+        price: '3.99',
+        stock: '150',
+        description: 'Fresh organic bananas, rich in potassium'
+      }
+    ]
+  };
 
   // Fetch products on component mount
   useEffect(() => {
@@ -65,13 +166,77 @@ const Products = () => {
       
       // Create a preview URL for immediate display
       const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
-      setSelectedImage(file);
+      const newImage = {
+        id: Date.now(),
+        url: previewUrl,
+        file: file,
+        type: 'file'
+      };
+      
+      setProductImages(prev => [...prev, newImage]);
+      setSelectedImageIndex(productImages.length); // Select the new image
       
     } catch (error) {
       alert(error.message);
     } finally {
       setImageUploading(false);
+    }
+  };
+
+  const handleAddImageUrl = () => {
+    if (imageUrlInput.trim()) {
+      const newImage = {
+        id: Date.now(),
+        url: imageUrlInput.trim(),
+        type: 'url'
+      };
+      
+      setProductImages(prev => [...prev, newImage]);
+      setSelectedImageIndex(productImages.length); // Select the new image
+      setImageUrlInput('');
+      setShowUrlInput(false);
+    }
+  };
+
+  const handleCategoryChange = (category) => {
+    setFormData({...formData, category});
+    
+    // Auto-suggest images for predefined categories
+    if (categoryImageSuggestions[category] && productImages.length === 0) {
+      const suggestedImages = categoryImageSuggestions[category].map((url, index) => ({
+        id: Date.now() + index,
+        url: url,
+        type: 'url'
+      }));
+      setProductImages(suggestedImages);
+      setSelectedImageIndex(0);
+    }
+  };
+
+  const addCategoryImage = (imageUrl) => {
+    const newImage = {
+      id: Date.now(),
+      url: imageUrl,
+      type: 'url'
+    };
+    
+    setProductImages(prev => [...prev, newImage]);
+    setSelectedImageIndex(productImages.length);
+  };
+
+  const handleRemoveImage = (index) => {
+    const imageToRemove = productImages[index];
+    
+    // Clean up blob URL if it's a file
+    if (imageToRemove.type === 'file' && imageToRemove.url.startsWith('blob:')) {
+      URL.revokeObjectURL(imageToRemove.url);
+    }
+    
+    setProductImages(prev => prev.filter((_, i) => i !== index));
+    
+    // Adjust selected index if needed
+    if (selectedImageIndex >= index) {
+      setSelectedImageIndex(Math.max(0, selectedImageIndex - 1));
     }
   };
 
@@ -81,21 +246,42 @@ const Products = () => {
       const productData = { ...formData };
       
       if (editingProduct) {
-        // If editing and new image is selected, upload it first
-        if (selectedImage) {
-          const imageUrl = await saveProductImage(editingProduct.id, selectedImage);
-          productData.image = imageUrl;
+        // If editing and new images are selected, upload them first
+        if (productImages.length > 0) {
+          const imageUrls = [];
+          for (const image of productImages) {
+            if (image.type === 'file') {
+              const imageUrl = await saveProductImage(editingProduct.id, image.file);
+              imageUrls.push(imageUrl);
+            } else {
+              imageUrls.push(image.url);
+            }
+          }
+          productData.images = imageUrls;
+          productData.image = imageUrls[0]; // Set first image as main image
         }
         await productsService.updateProduct(editingProduct.id, productData);
         setEditingProduct(null);
-              } else {
-          const newProduct = await productsService.addProduct(productData);
+      } else {
+        const newProduct = await productsService.addProduct(productData);
         
-        // Save image if uploaded
-        if (selectedImage) {
-          const imageUrl = await saveProductImage(newProduct.id, selectedImage);
-          // Update product with image URL
-          await productsService.updateProduct(newProduct.id, { ...productData, image: imageUrl });
+        // Save images if uploaded
+        if (productImages.length > 0) {
+          const imageUrls = [];
+          for (const image of productImages) {
+            if (image.type === 'file') {
+              const imageUrl = await saveProductImage(newProduct.id, image.file);
+              imageUrls.push(imageUrl);
+            } else {
+              imageUrls.push(image.url);
+            }
+          }
+          // Update product with image URLs
+          await productsService.updateProduct(newProduct.id, { 
+            ...productData, 
+            images: imageUrls,
+            image: imageUrls[0] // Set first image as main image
+          });
         }
       }
       
@@ -140,13 +326,17 @@ const Products = () => {
       status: 'active'
     });
     
-    // Clean up preview URL to prevent memory leaks
-    if (imagePreview && imagePreview.startsWith('blob:')) {
-      URL.revokeObjectURL(imagePreview);
-    }
+    // Clean up all blob URLs to prevent memory leaks
+    productImages.forEach(image => {
+      if (image.type === 'file' && image.url.startsWith('blob:')) {
+        URL.revokeObjectURL(image.url);
+      }
+    });
     
-    setSelectedImage(null);
-    setImagePreview(null);
+    setProductImages([]);
+    setSelectedImageIndex(0);
+    setImageUrlInput('');
+    setShowUrlInput(false);
   };
 
   const openEditModal = (product) => {
@@ -160,10 +350,27 @@ const Products = () => {
       status: product.status || 'active'
     });
     
-    // Load existing image if available
-    const existingImage = getProductImage(product.id, product.image);
-    setImagePreview(existingImage);
-    setSelectedImage(null);
+    // Load existing images if available
+    if (product.images && product.images.length > 0) {
+      const images = product.images.map((imageUrl, index) => ({
+        id: index,
+        url: imageUrl,
+        type: 'url'
+      }));
+      setProductImages(images);
+      setSelectedImageIndex(0);
+    } else if (product.image) {
+      // Fallback to single image
+      setProductImages([{
+        id: 0,
+        url: product.image,
+        type: 'url'
+      }]);
+      setSelectedImageIndex(0);
+    } else {
+      setProductImages([]);
+      setSelectedImageIndex(0);
+    }
     
     setShowAddModal(true);
   };
@@ -174,7 +381,7 @@ const Products = () => {
     setShowAddModal(true);
   };
 
-  const categories = ['all', ...Array.from(new Set(products.map(p => p.category)))];
+  const categories = ['all', ...predefinedCategories, ...Array.from(new Set(products.map(p => p.category).filter(cat => !predefinedCategories.includes(cat))))];
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -291,13 +498,15 @@ const Products = () => {
           <h1 className="text-2xl font-bold text-gray-900">Products</h1>
           <p className="text-gray-600">Manage your product catalog</p>
         </div>
-        <button
-          onClick={openAddModal}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Product
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={openAddModal}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Product
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -381,43 +590,73 @@ const Products = () => {
       {/* Add/Edit Product Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold text-gray-900 mb-4">
               {editingProduct ? 'Edit Product' : 'Add New Product'}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Image Upload Section */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Multiple Image Upload Section */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Product Image
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Product Images
                 </label>
-                <div className="space-y-3">
-                  {/* Image Preview */}
-                  {imagePreview && (
-                    <div className="relative">
+                
+                {/* Main Image Display */}
+                {productImages.length > 0 && (
+                  <div className="mb-4">
+                    <div className="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
                       <img 
-                        src={imagePreview} 
-                        alt="Preview" 
-                        className="w-full h-32 object-cover rounded-lg border"
+                        src={productImages[selectedImageIndex]?.url} 
+                        alt="Main preview" 
+                        className="w-full h-full object-contain"
                       />
                       <button
                         type="button"
-                        onClick={() => {
-                          // Clean up blob URL to prevent memory leaks
-                          if (imagePreview && imagePreview.startsWith('blob:')) {
-                            URL.revokeObjectURL(imagePreview);
-                          }
-                          setImagePreview(null);
-                          setSelectedImage(null);
-                        }}
+                        onClick={() => handleRemoveImage(selectedImageIndex)}
                         className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <X className="w-4 h-4" />
                       </button>
                     </div>
-                  )}
-                  
-                  {/* Upload Button */}
+                  </div>
+                )}
+
+                {/* Thumbnail Gallery */}
+                {productImages.length > 0 && (
+                  <div className="mb-4">
+                    <div className="flex gap-2 overflow-x-auto pb-2">
+                      {productImages.map((image, index) => (
+                        <div
+                          key={image.id}
+                          className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 cursor-pointer ${
+                            selectedImageIndex === index ? 'border-blue-500' : 'border-gray-200'
+                          }`}
+                          onClick={() => setSelectedImageIndex(index)}
+                        >
+                          <img
+                            src={image.url}
+                            alt={`Thumbnail ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveImage(index);
+                            }}
+                            className="absolute top-0 right-0 p-0.5 bg-red-500 text-white rounded-bl text-xs hover:bg-red-600"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Image Upload Options */}
+                <div className="space-y-3">
+                  {/* File Upload */}
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
                     <input
                       type="file"
@@ -448,36 +687,96 @@ const Products = () => {
                       </div>
                     </label>
                   </div>
+
+                  {/* URL Input */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowUrlInput(!showUrlInput)}
+                      className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200"
+                    >
+                      <LinkIcon className="w-4 h-4" />
+                      Add Image URL
+                    </button>
+                  </div>
+
+                  {showUrlInput && (
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        value={imageUrlInput}
+                        onChange={(e) => setImageUrlInput(e.target.value)}
+                        placeholder="Enter image URL"
+                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddImageUrl}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Product Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter product name"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.category}
-                  onChange={(e) => setFormData({...formData, category: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter category"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+              {/* Product Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Product Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter product name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Category
+                  </label>
+                  <select
+                    required
+                    value={formData.category}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Select a category</option>
+                    {predefinedCategories.map(category => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                  
+                  {/* Category Image Suggestions */}
+                  {formData.category && categoryImageSuggestions[formData.category] && (
+                    <div className="mt-3">
+                      <p className="text-sm text-gray-600 mb-2">Suggested images for {formData.category}:</p>
+                      <div className="flex gap-2 overflow-x-auto pb-2">
+                        {categoryImageSuggestions[formData.category].map((imageUrl, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => addCategoryImage(imageUrl)}
+                            className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-blue-500 transition-colors"
+                          >
+                            <img
+                              src={imageUrl}
+                              alt={`Suggested ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Price
@@ -506,6 +805,7 @@ const Products = () => {
                   />
                 </div>
               </div>
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Description
@@ -518,6 +818,7 @@ const Products = () => {
                   placeholder="Enter product description"
                 />
               </div>
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Status
@@ -531,6 +832,7 @@ const Products = () => {
                   <option value="inactive">Inactive</option>
                 </select>
               </div>
+              
               <div className="flex items-center justify-end space-x-3 pt-4">
                 <button
                   type="button"

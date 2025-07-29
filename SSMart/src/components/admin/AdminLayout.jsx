@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAdmin } from '../../contexts/AdminContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { 
   LayoutDashboard,
   Package,
@@ -20,7 +20,7 @@ import {
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { admin, logout } = useAdmin();
+  const { currentUser, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -28,15 +28,20 @@ const AdminLayout = () => {
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Products', href: '/admin/products', icon: Package },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
+    { name: 'Users', href: '/admin/users', icon: Users },
     // { name: 'Customers', href: '/admin/customers', icon: Users },
     // { name: 'Storage', href: '/admin/storage', icon: HardDrive },
     // { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
     // { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 
-  const handleLogout = () => {
-    logout();
-    navigate('/admin/login');
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   const isActive = (path) => {
@@ -106,8 +111,8 @@ const AdminLayout = () => {
               <User className="w-5 h-5 text-white" />
             </div>
             <div className="ml-3 flex-1">
-              <p className="text-sm font-semibold text-gray-900">{admin?.name}</p>
-              <p className="text-xs text-gray-500">{admin?.email}</p>
+              <p className="text-sm font-semibold text-gray-900">{currentUser?.displayName || 'Admin User'}</p>
+              <p className="text-xs text-gray-500">{currentUser?.email}</p>
             </div>
             <button
               onClick={handleLogout}

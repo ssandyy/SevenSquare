@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import CartService from '../services/cartService';
+import { useAuth } from './AuthContext';
 
 export const CartContext = createContext();
 
@@ -21,14 +23,44 @@ export function getDiscountedPrice(originalPrice) {
 
 
 export const CartProvider = ({ children }) => {
-  
-
   const [cart, setCart] = useState([]);
   const [cartQty, setCartQty] = useState(0);
   const [cartTotal, setCartTotal] = useState(0);
   const [totalSaving, setTotalSaving] = useState(0);
   const [discountedPrice, setDiscountedPrice] = useState(0);
   const [totalDiscountedPrice, setTotalDiscountedPrice] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const { currentUser } = useAuth();
+
+  // Load user's cart when user changes
+  useEffect(() => {
+    console.log('CartContext: currentUser changed:', currentUser?.uid || 'null');
+    if (currentUser) {
+      loadCart();
+    } else {
+      console.log('CartContext: Clearing cart state');
+      setCart([]);
+      setCartQty(0);
+      setCartTotal(0);
+      setTotalSaving(0);
+      setDiscountedPrice(0);
+      setTotalDiscountedPrice(0);
+    }
+  }, [currentUser?.uid]); // Use currentUser.uid instead of currentUser object
+
+  const loadCart = async () => {
+    if (!currentUser) return;
+
+    try {
+      setLoading(true);
+      const userCart = await CartService.getUserCart(currentUser.uid);
+      setCart(userCart);
+    } catch (error) {
+      console.error('Error loading cart:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // total quantity
   useEffect(() => {
@@ -61,48 +93,68 @@ export const CartProvider = ({ children }) => {
   }, [cart])
 
 
-  const addToCart = (product) => {
-    setCart((prevCart) => {
-      const existing = prevCart.find((item) => item.id === product.id);
-      if (existing) {
-        return prevCart.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      } else {
-        // Store the original product quantity as maxQuantity
-        return [
-          ...prevCart,
-          { ...product, quantity: 1, maxQuantity: product.quantity }
-        ];
-      }
-    });
+  const addToCart = async (product) => {
+    if (!currentUser) {
+      throw new Error('Please login to add items to cart');
+    }
+
+    try {
+      const updatedCart = await CartService.addToCart(currentUser.uid, product);
+      setCart(updatedCart);
+      return updatedCart;
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      throw error;
+    }
   };
 
-  const removeFromCart = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
-  }
+  const removeFromCart = async (productId) => {
+    if (!currentUser) return;
 
-  const incrementQuantity = (product) => {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === product.id && item.quantity < item.maxQuantity
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
-    );
-  }
+    try {
+      const updatedCart = await CartService.removeFromCart(currentUser.uid, productId);
+      setCart(updatedCart);
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+      throw error;
+    }
+  };
 
-  const decrementQuantity = (product) => {
-    setCart((prevCart) =>
-      prevCart
-        .map((item) =>
-          item.id === product.id ? item.quantity > 0 ? { ...item, quantity: item.quantity - 1 } : item : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
-  }
+  const incrementQuantity = async (productId) => {
+    if (!currentUser) return;
+
+    try {
+      const updatedCart = await CartService.incrementQuantity(currentUser.uid, productId);
+      setCart(updatedCart);
+    } catch (error) {
+      console.error('Error incrementing quantity:', error);
+      throw error;
+    }
+  };
+
+  const decrementQuantity = async (productId) => {
+    if (!currentUser) return;
+
+    try {
+      const updatedCart = await CartService.decrementQuantity(currentUser.uid, productId);
+      setCart(updatedCart);
+    } catch (error) {
+      console.error('Error decrementing quantity:', error);
+      throw error;
+    }
+  };
+
+  const clearCart = async () => {
+    if (!currentUser) return;
+
+    try {
+      const updatedCart = await CartService.clearCart(currentUser.uid);
+      setCart(updatedCart);
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      throw error;
+    }
+  };
 
   // const addToCart = (product) => {
   //   const newItem = {...product, quantity: 1};
@@ -127,8 +179,21 @@ export const CartProvider = ({ children }) => {
   // }
 
   return (
-    // <CartContext.Provider value={{ cart, addToCart, removeFromCart}}>
-    <CartContext.Provider value={{ cart, discountedPrice, addToCart, removeFromCart, incrementQuantity, totalDiscountedPrice, decrementQuantity, cartQty, cartTotal, totalSaving}}>
+    <CartContext.Provider value={{ 
+      cart, 
+      discountedPrice, 
+      addToCart, 
+      removeFromCart, 
+      incrementQuantity, 
+      totalDiscountedPrice, 
+      decrementQuantity, 
+      cartQty, 
+      cartTotal, 
+      totalSaving,
+      clearCart,
+      loading,
+      loadCart
+    }}>
       {children}
     </CartContext.Provider>
   );

@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import WishlistService from '../services/wishlistService';
 import { useAuth } from './AuthContext';
-import { useCart } from './CartContext';
 
-const WishlistContext = createContext();
+export const WishlistContext = createContext();
 
+// Add the useWishlist hook
 export const useWishlist = () => {
   const context = useContext(WishlistContext);
   if (!context) {
@@ -15,20 +15,23 @@ export const useWishlist = () => {
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
+  const [loading, setLoading] = useState(false);
   const { currentUser } = useAuth();
-  const { addToCart } = useCart();
 
   // Load user's wishlist when user changes
   useEffect(() => {
+    console.log('WishlistContext: currentUser changed:', currentUser?.uid || 'null');
     if (currentUser) {
       loadWishlist();
     } else {
+      console.log('WishlistContext: Clearing wishlist state');
       setWishlist([]);
       setWishlistCount(0);
+      // Force immediate count update
+      console.log('WishlistContext: Forced wishlist count to 0');
     }
-  }, [currentUser]);
+  }, [currentUser?.uid]); // Use currentUser.uid instead of currentUser object
 
   const loadWishlist = async () => {
     if (!currentUser) return;
@@ -37,7 +40,6 @@ export const WishlistProvider = ({ children }) => {
       setLoading(true);
       const userWishlist = await WishlistService.getUserWishlist(currentUser.uid);
       setWishlist(userWishlist);
-      setWishlistCount(userWishlist.length);
     } catch (error) {
       console.error('Error loading wishlist:', error);
     } finally {
@@ -45,21 +47,22 @@ export const WishlistProvider = ({ children }) => {
     }
   };
 
+  // Update wishlist count when wishlist changes
+  useEffect(() => {
+    const newCount = wishlist.length;
+    console.log('WishlistContext: Updating wishlist count from', wishlistCount, 'to', newCount);
+    setWishlistCount(newCount);
+  }, [wishlist]);
+
   const addToWishlist = async (productId, productData) => {
     if (!currentUser) {
       throw new Error('Please login to add items to wishlist');
     }
 
     try {
-      console.log('Adding to wishlist - Current count:', wishlistCount);
-      const newItem = await WishlistService.addToWishlist(currentUser.uid, productId, productData);
-      setWishlist(prev => [newItem, ...prev]);
-      setWishlistCount(prev => {
-        const newCount = prev + 1;
-        console.log('Updated wishlist count:', newCount);
-        return newCount;
-      });
-      return newItem;
+      const updatedWishlist = await WishlistService.addToWishlist(currentUser.uid, productId, productData);
+      setWishlist(updatedWishlist);
+      return updatedWishlist;
     } catch (error) {
       console.error('Error adding to wishlist:', error);
       throw error;
@@ -70,14 +73,8 @@ export const WishlistProvider = ({ children }) => {
     if (!currentUser) return;
 
     try {
-      console.log('Removing from wishlist - Current count:', wishlistCount);
-      await WishlistService.removeFromWishlist(currentUser.uid, productId);
-      setWishlist(prev => prev.filter(item => item.productId !== productId));
-      setWishlistCount(prev => {
-        const newCount = prev - 1;
-        console.log('Updated wishlist count:', newCount);
-        return newCount;
-      });
+      const updatedWishlist = await WishlistService.removeFromWishlist(currentUser.uid, productId);
+      setWishlist(updatedWishlist);
     } catch (error) {
       console.error('Error removing from wishlist:', error);
       throw error;
@@ -99,54 +96,26 @@ export const WishlistProvider = ({ children }) => {
     if (!currentUser) return;
 
     try {
-      await WishlistService.clearWishlist(currentUser.uid);
-      setWishlist([]);
-      setWishlistCount(0);
+      const updatedWishlist = await WishlistService.clearWishlist(currentUser.uid);
+      setWishlist(updatedWishlist);
     } catch (error) {
       console.error('Error clearing wishlist:', error);
       throw error;
     }
   };
 
-  const moveToCart = async (productId) => {
-    if (!currentUser) return;
-
-    try {
-      // Find the wishlist item to get product data
-      const wishlistItem = wishlist.find(item => item.productId === productId);
-      if (!wishlistItem) {
-        throw new Error('Product not found in wishlist');
-      }
-
-      console.log('Moving to cart:', { productId, productData: wishlistItem.productData });
-
-      // Add to cart first
-      addToCart(wishlistItem.productData);
-      
-      // Then remove from wishlist
-      await WishlistService.removeFromWishlist(currentUser.uid, productId);
-      setWishlist(prev => prev.filter(item => item.productId !== productId));
-      setWishlistCount(prev => prev - 1);
-    } catch (error) {
-      console.error('Error moving to cart:', error);
-      throw error;
-    }
-  };
-
-  const value = {
-    wishlist,
-    wishlistCount,
-    loading,
-    addToWishlist,
-    removeFromWishlist,
-    isInWishlist,
-    clearWishlist,
-    moveToCart,
-    loadWishlist
-  };
-
   return (
-    <WishlistContext.Provider value={value}>
+    <WishlistContext.Provider value={{ 
+      wishlist, 
+      wishlistCount, 
+      addToWishlist, 
+      removeFromWishlist, 
+      isInWishlist,
+      clearWishlist,
+      loading,
+      loadWishlist,
+      refreshWishlist: loadWishlist
+    }}>
       {children}
     </WishlistContext.Provider>
   );

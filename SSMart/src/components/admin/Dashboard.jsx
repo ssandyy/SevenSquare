@@ -76,7 +76,7 @@ const Dashboard = () => {
     </div>
   );
 
-  const QuickAction = ({ title, description, icon: Icon, href, colorScheme = 'blue' }) => {
+  const QuickAction = ({ title, description, href, icon: Icon, colorScheme = 'blue' }) => {
     const colorClasses = {
       blue: {
         border: 'border-blue-500',

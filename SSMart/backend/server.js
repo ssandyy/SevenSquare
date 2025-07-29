@@ -162,9 +162,15 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'SSMart Backend is running' });
 });
 
-// Admin panel route (serve admin frontend)
-app.get('/admin*', (req, res) => {
-  res.json({ message: 'Admin panel - Frontend integration needed' });
+// Serve static files from the frontend build (dist folder at project root)
+app.use(express.static(path.join(__dirname, '../dist')));
+
+// SPA catch-all: serve index.html for all non-API, non-upload routes
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+    return res.status(404).end();
+  }
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 app.listen(PORT, () => {
